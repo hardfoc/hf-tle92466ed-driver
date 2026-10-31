@@ -21,8 +21,8 @@
 <codeline></codeline>
 <codeline><highlight class="normal">[![C++](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.cppreference.com/w/cpp/20)</highlight></codeline>
 <codeline><highlight class="normal">[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)</highlight></codeline>
-<codeline><highlight class="normal">[![CI](https://github.com/N3b3x/hf-tle92466ed-driver/actions/workflows/esp32-examples-build-ci.yml/badge.svg?branch=main)](https://github.com/N3b3x/hf-tle92466ed-driver/actions/workflows/esp32-examples-build-ci.yml)</highlight></codeline>
-<codeline><highlight class="normal">[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://n3b3x.github.io/hf-tle92466ed-driver/)</highlight></codeline>
+<codeline><highlight class="normal">[![CI](https://github.com/hardfoc/hf-tle92466ed-driver/actions/workflows/esp32-examples-build-ci.yml/badge.svg?branch=main)](https://github.com/hardfoc/hf-tle92466ed-driver/actions/workflows/esp32-examples-build-ci.yml)</highlight></codeline>
+<codeline><highlight class="normal">[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://hardfoc.github.io/hf-tle92466ed-driver/)</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">##<sp/>📚<sp/>Table<sp/>of<sp/>Contents</highlight></codeline>
 <codeline><highlight class="normal">1.<sp/>[Overview](#-overview)</highlight></codeline>
@@ -38,7 +38,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal">##<sp/>📦<sp/>Overview</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">&gt;<sp/>**📖<sp/>[📚🌐<sp/>Live<sp/>Complete<sp/>Documentation](https://n3b3x.github.io/hf-tle92466ed-driver/)**<sp/>-<sp/></highlight></codeline>
+<codeline><highlight class="normal">&gt;<sp/>**📖<sp/>[📚🌐<sp/>Live<sp/>Complete<sp/>Documentation](https://hardfoc.github.io/hf-tle92466ed-driver/)**<sp/>-<sp/></highlight></codeline>
 <codeline><highlight class="normal">&gt;<sp/>Interactive<sp/>guides,<sp/>examples,<sp/>and<sp/>step-by-step<sp/>tutorials</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">**HF-TLE92466ED**<sp/>is<sp/>a<sp/>modern<sp/>C++20<sp/>driver<sp/>for<sp/>the<sp/>**Infineon<sp/>TLE92466ED**<sp/>Six-Channel<sp/>Low-Side<sp/>Solenoid<sp/>Driver<sp/>IC.<sp/>The<sp/>TLE92466ED<sp/>provides<sp/>six<sp/>independent<sp/>low-side<sp/>outputs<sp/>for<sp/>controlling<sp/>solenoids,<sp/>valves,<sp/>and<sp/>other<sp/>inductive<sp/>loads<sp/>with<sp/>precision<sp/>current<sp/>regulation.<sp/>Each<sp/>channel<sp/>supports<sp/>up<sp/>to<sp/>2A<sp/>in<sp/>single<sp/>mode<sp/>or<sp/>4A<sp/>in<sp/>parallel<sp/>mode,<sp/>with<sp/>15-bit<sp/>resolution<sp/>(0.061mA<sp/>steps)<sp/>for<sp/>precise<sp/>current<sp/>control.</highlight></codeline>

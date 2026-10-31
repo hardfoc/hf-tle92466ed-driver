@@ -9,10 +9,10 @@ description: |
   Modern C++20 with SPI interface, 15-bit precision current control,
   CRC-8, and comprehensive diagnostics.
 
-url: "https://github.com/N3b3x/hf-tle92466ed-driver"
-repository: "https://github.com/N3b3x/hf-tle92466ed-driver.git"
-documentation: "https://n3b3x.github.io/hf-tle92466ed-driver/"
-issues: "https://github.com/N3b3x/hf-tle92466ed-driver/issues"
+url: "https://github.com/hardfoc/hf-tle92466ed-driver"
+repository: "https://github.com/hardfoc/hf-tle92466ed-driver.git"
+documentation: "https://hardfoc.github.io/hf-tle92466ed-driver/"
+issues: "https://github.com/hardfoc/hf-tle92466ed-driver/issues"
 
 license: "GPL-3.0"
 maintainers:
