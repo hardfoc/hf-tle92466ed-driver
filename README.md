@@ -12,8 +12,8 @@ permalink: /
 
 [![C++](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.cppreference.com/w/cpp/20)
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![CI](https://github.com/N3b3x/hf-tle92466ed-driver/actions/workflows/esp32-examples-build-ci.yml/badge.svg?branch=main)](https://github.com/N3b3x/hf-tle92466ed-driver/actions/workflows/esp32-examples-build-ci.yml)
-[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://n3b3x.github.io/hf-tle92466ed-driver/)
+[![CI](https://github.com/hardfoc/hf-tle92466ed-driver/actions/workflows/esp32-examples-build-ci.yml/badge.svg?branch=main)](https://github.com/hardfoc/hf-tle92466ed-driver/actions/workflows/esp32-examples-build-ci.yml)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://hardfoc.github.io/hf-tle92466ed-driver/)
 
 ## 📚 Table of Contents
 1. [Overview](#-overview)
@@ -29,7 +29,7 @@ permalink: /
 
 ## 📦 Overview
 
-> **📖 [📚🌐 Live Complete Documentation](https://n3b3x.github.io/hf-tle92466ed-driver/)** - 
+> **📖 [📚🌐 Live Complete Documentation](https://hardfoc.github.io/hf-tle92466ed-driver/)** - 
 > Interactive guides, examples, and step-by-step tutorials
 
 **HF-TLE92466ED** is a modern C++20 driver for the **Infineon TLE92466ED** Six-Channel Low-Side Solenoid Driver IC. The TLE92466ED provides six independent low-side outputs for controlling solenoids, valves, and other inductive loads with precision current regulation. Each channel supports up to 2A in single mode or 4A in parallel mode, with 15-bit resolution (0.061mA steps) for precise current control.

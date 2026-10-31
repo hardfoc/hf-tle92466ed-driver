@@ -523,7 +523,7 @@ targets:
 
 1. **Clone repository**
    ```bash
-   git clone https://github.com/N3b3x/hf-tle92466ed-driver.git
+   git clone https://github.com/hardfoc/hf-tle92466ed-driver.git
    cd hf-tle92466ed-driver/examples/esp32
    ```
 2. **Initialize submodules**

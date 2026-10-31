@@ -215,7 +215,7 @@ seo:
     C++20 driver for Infineon TLE92466ED Six-Channel Low-Side Solenoid
     Driver IC with comprehensive SPI interface, current control, and
     diagnostics
-  url: "https://n3b3x.github.io/hf-tle92466ed-driver"
+  url: "https://hardfoc.github.io/hf-tle92466ed-driver"
   twitter:
     card: "summary_large_image"
     site: "@n3b3x"

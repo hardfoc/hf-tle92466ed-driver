@@ -116,7 +116,7 @@ Complete documentation for TLE92466ED driver examples on ESP32-C6.
 
 1. **Clone and setup**:
    ```bash
-   git clone https://github.com/N3b3x/hf-tle92466ed-driver.git
+   git clone https://github.com/hardfoc/hf-tle92466ed-driver.git
    cd hf-tle92466ed-driver/examples/esp32
    git submodule update --init --recursive
    ```
