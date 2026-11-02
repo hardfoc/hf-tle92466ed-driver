@@ -23,7 +23,7 @@
  * - MOSI: 32-bit frame (CRC[31:24] + Address[23:17] + R/W[16] + Data[15:0])
  * - MISO: 32-bit frame (CRC[31:24] + ReplyMode[23:22] + Status[21:17] + R/W[16] + Data[15:0])
  * - CS: Chip select (active low)
- * - SCLK: Serial clock (up to 10 MHz)
+ * - SCLK: Serial clock (f_SCK up to 8 MHz, datasheet 5.1.4 Table 18)
  * - CRC: SAE J1850 8-bit CRC
  *
  */
@@ -129,7 +129,7 @@ using CommResult = tle::expected<T, CommError>;
  * access must be terminated by a rising edge of CSN."
  */
 struct SPIConfig {
-  uint32_t frequency{1'000'000}; ///< SPI clock frequency in Hz (max 10 MHz for TLE92466ED)
+  uint32_t frequency{1'000'000}; ///< SPI clock frequency in Hz (max 8 MHz, datasheet 5.1.4 Table 18)
   uint8_t mode{1};               ///< SPI mode (CPOL=0, CPHA=1 for TLE92466ED)
   bool msb_first{true};          ///< MSB first transmission
   uint32_t timeout_ms{100};      ///< Transaction timeout in milliseconds
@@ -418,8 +418,8 @@ enum class SPIStatus : uint8_t {
  *
  * @par Hardware Requirements:
  * - SPI peripheral capable of 32-bit transfers (or 4x 8-bit)
- * - Minimum frequency: 100 kHz
- * - Maximum frequency: 10 MHz
+ * - Maximum frequency: 8 MHz (f_SCK, datasheet 5.1.4 Table 18; no minimum is specified)
+ * - CSN high for at least 600 ns between frames (t_CSN_TD)
  * - Support for SPI Mode 1 (CPOL=0, CPHA=1)
  * - CRC calculation capability (hardware or software)
  *
@@ -481,8 +481,10 @@ public:
    * @par Timing Requirements:
    * - CS must be asserted (low) before transfer and deasserted (high) after
    * - CS must be held low during entire 32-bit transfer
-   * - Minimum CS inactive time between transfers: 100ns
-   * - Data sampled on rising edge (CPHA=1)
+   * - CSN lead and lag time: at least 250 ns each (t_CSN_LEAD, t_CSN_LAG)
+   * - Minimum CS inactive time between transfers: 600 ns (t_CSN_TD)
+   * - SI sampled on the falling edge of SCK, SO shifted on the rising edge (mode 1)
+   * (datasheet 5.1.4 Table 18 and 5.2)
    *
    * @note Chip select (CS) management must be handled internally by this function.
    *       The implementation should assert CS before the transfer and deassert it after.
@@ -551,7 +553,7 @@ public:
    * @retval CommError::InvalidParameter Invalid configuration
    *
    * @par TLE92466ED SPI Requirements:
-   * - Frequency: 100 kHz - 10 MHz
+   * - Frequency: up to 8 MHz (datasheet 5.1.4 Table 18)
    * - Mode: 1 (CPOL=0, CPHA=1) - Data sampled on falling edge of SCK, shifted on rising edge
    * - Bit order: MSB first
    * - Frame size: 32 bits (4 bytes)
@@ -958,15 +960,17 @@ inline CommResult<uint32_t> SpiInterface<Derived>::Read(uint16_t address, bool v
     }
     saw_any_frame = true;
 
-    if (!VerifyFrameCrc(candidate)) {
-      continue;
-    }
-
+    /* Critical fault frame (UV / clock / supplies) first: its bits 31:24 are
+     * "don't care", not a CRC (datasheet 5.2.3.5), so a CRC check would reject
+     * it and report CRCError instead of the fault. The device is answering
+     * truthfully that it cannot serve the read, so this is not retried. */
     if (candidate.rx_common.reply_mode == 0x02) {
-      /* Critical fault frame (UV / clock / supplies). The device is answering
-       * truthfully that it cannot serve the read, so this is not retried. */
       NoteCriticalFault(candidate);
       return tle::unexpected(CommError::BusError);
+    }
+
+    if (!VerifyFrameCrc(candidate)) {
+      continue;
     }
 
     const bool width_ok =
@@ -1077,14 +1081,15 @@ inline CommResult<void> SpiInterface<Derived>::ReadMulti(
     if (candidate.word == 0U || candidate.word == 0xFFFFFFFFU) {
       continue; /* Undriven MISO. */
     }
-    if (!VerifyFrameCrc(candidate)) {
-      continue;
-    }
     if (candidate.rx_common.reply_mode == 0x02) {
-      /* Critical fault (UV / clock / supplies). The device is telling us it
-       * cannot serve any of these reads, so abandon the whole burst. */
+      /* Critical fault (UV / clock / supplies), checked before the CRC because
+       * bits 31:24 of this frame are "don't care" (datasheet 5.2.3.5). The
+       * device cannot serve any of these reads, so abandon the whole burst. */
       NoteCriticalFault(candidate);
       return tle::unexpected(CommError::BusError);
+    }
+    if (!VerifyFrameCrc(candidate)) {
+      continue;
     }
     const ExpectedReply expected = ExpectedReplyFor(addresses[i]);
     const bool width_ok = (expected == ExpectedReply::Bits22)
@@ -1130,6 +1135,14 @@ inline CommResult<void> SpiInterface<Derived>::Write(uint16_t address, uint16_t 
   SPIFrame rx_frame{};
   rx_frame.word = rx_words[2];
 
+  // Critical fault frame first — keep the cause byte for the caller. Its bits
+  // 31:24 are "don't care", not a CRC (datasheet 5.2.3.5), so checking the CRC
+  // first turned a supply/clock fault into CommError::CRCError.
+  if (rx_frame.rx_common.reply_mode == 0x02) {
+    NoteCriticalFault(rx_frame);
+    return tle::unexpected(CommError::BusError);
+  }
+
   // Verify CRC if requested
   if (verify_crc && !VerifyFrameCrc(rx_frame)) {
     return tle::unexpected(CommError::CRCError);
@@ -1142,10 +1155,6 @@ inline CommResult<void> SpiInterface<Derived>::Write(uint16_t address, uint16_t 
       // Status indicates an error
       return tle::unexpected(CommError::TransferError);
     }
-  } else if (rx_frame.rx_common.reply_mode == 0x02) {
-    // Critical fault frame — keep the cause byte for the caller.
-    NoteCriticalFault(rx_frame);
-    return tle::unexpected(CommError::BusError);
   }
 
   return {};

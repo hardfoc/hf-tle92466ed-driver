@@ -112,4 +112,51 @@ TEST_CASE("a critical fault reply surfaces as FaultDetected") {
   auto r = drv.ReadRegister(CentralReg::GLOBAL_DIAG0);
   REQUIRE(!r.has_value());
   CHECK(r.error() == DriverError::FaultDetected);
+  auto w = drv.WriteRegister(CentralReg::VBAT_TH, 0x0101, true, false);
+  REQUIRE(!w.has_value());
+  CHECK(w.error() == DriverError::FaultDetected);
+}
+
+// GlobalConfig{} describes the state Init() leaves (datasheet 5.3 GLOBAL_CONFIG / VBAT_TH): applying
+// the defaults must not switch on the SPI watchdog (it would drop the chip to Config Mode once WD_TIME
+// runs out, datasheet 5.2.2) or change CRC_EN and the VBAT thresholds behind the caller's back.
+TEST_CASE("ConfigureGlobal(GlobalConfig{}) keeps the configuration Init() wrote") {
+  MockTle92466ed chip;
+  Driver drv(chip);
+  REQUIRE(drv.Init().has_value());
+  const uint32_t global_after_init = chip.regs()[CentralReg::GLOBAL_CONFIG];
+  const uint32_t vbat_after_init = chip.regs()[CentralReg::VBAT_TH];
+
+  REQUIRE(drv.ConfigureGlobal(tle92466ed::GlobalConfig{}).has_value());
+  CHECK_EQ(chip.regs()[CentralReg::GLOBAL_CONFIG], global_after_init);
+  CHECK_EQ(chip.regs()[CentralReg::VBAT_TH], vbat_after_init);
+  CHECK_EQ(chip.regs()[CentralReg::GLOBAL_CONFIG] & tle92466ed::GLOBAL_CONFIG::SPI_WD_EN, 0U);
+  CHECK_EQ(chip.regs()[CentralReg::GLOBAL_CONFIG] & tle92466ed::GLOBAL_CONFIG::CRC_EN, 0U);
+}
+
+// Datasheet 5.3 PERIOD register: PERIOD_MANT is bits 7:0 and PERIOD_EXP bits 10:8. A wider value
+// used to be truncated into the 8-bit parameter (300 became 44) and written without complaint.
+TEST_CASE("ConfigureChannel() rejects a PWM period mantissa or exponent wider than the PERIOD fields") {
+  MockTle92466ed chip;
+  Driver drv(chip);
+  REQUIRE(drv.Init().has_value());
+  const uint16_t period = tle92466ed::GetChannelRegister(Channel::CH0, ChannelReg::PERIOD);
+  chip.regs()[period] = 0x1234;
+
+  tle92466ed::ChannelConfig cfg{};
+  cfg.pwm_period_mantissa = 300;
+  auto r = drv.ConfigureChannel(Channel::CH0, cfg);
+  REQUIRE(!r.has_value());
+  CHECK(r.error() == DriverError::InvalidParameter);
+  CHECK_EQ(chip.regs()[period], 0x1234U);
+
+  cfg.pwm_period_mantissa = 200;
+  cfg.pwm_period_exponent = 8;
+  auto e = drv.ConfigureChannel(Channel::CH0, cfg);
+  REQUIRE(!e.has_value());
+  CHECK(e.error() == DriverError::InvalidParameter);
+
+  cfg.pwm_period_exponent = 3;
+  REQUIRE(drv.ConfigureChannel(Channel::CH0, cfg).has_value());
+  CHECK_EQ(chip.regs()[period] & 0x07FFU, 200U | (3U << 8));
 }

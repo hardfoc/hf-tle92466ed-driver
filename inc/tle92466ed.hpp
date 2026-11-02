@@ -258,15 +258,22 @@ struct FaultReport {
 
 /**
  * @brief Global configuration structure
+ *
+ * @details The defaults are the configuration `Init()` writes, so
+ * `ConfigureGlobal(GlobalConfig{})` changes nothing: CRC check and SPI
+ * watchdog off, clock watchdog on, 3.3 V VIO thresholds, VBAT 7 V / 40 V.
+ * Turn `crc_enabled` and `spi_watchdog_enabled` on explicitly once the bus is
+ * proven; with the SPI watchdog on, `ReloadSpiWatchdog()` must run before
+ * WD_TIME expires (datasheet 5.2.2).
  */
 struct GlobalConfig {
-  bool crc_enabled{true};             ///< Enable CRC checking
-  bool spi_watchdog_enabled{true};    ///< Enable SPI watchdog
-  bool clock_watchdog_enabled{true};  ///< Enable clock watchdog
+  bool crc_enabled{false};            ///< Enable CRC checking (GLOBAL_CONFIG.CRC_EN)
+  bool spi_watchdog_enabled{false};   ///< Enable SPI watchdog (GLOBAL_CONFIG.SPI_WD_EN)
+  bool clock_watchdog_enabled{true};  ///< Enable clock watchdog (GLOBAL_CONFIG.CLK_WD_EN)
   bool vio_5v{false};                 ///< VIO voltage (false=3.3V, true=5.0V)
-  float vbat_uv_voltage{4.0F};        ///< VBAT UV threshold voltage in volts (default: ~4V)
-  float vbat_ov_voltage{41.0F};       ///< VBAT OV threshold voltage in volts (default: ~41V)
-  uint16_t spi_watchdog_reload{1000}; ///< SPI watchdog reload value
+  float vbat_uv_voltage{7.0F};        ///< VBAT UV threshold voltage in volts
+  float vbat_ov_voltage{40.0F};       ///< VBAT OV threshold voltage in volts
+  uint16_t spi_watchdog_reload{1000}; ///< SPI watchdog reload value (WD_RELOAD)
 };
 
 /**
@@ -590,7 +597,7 @@ public:
    *
    * @param channel Channel to configure
    * @param period_mantissa PWM period mantissa (0-255)
-   * @param period_exponent PWM period exponent (0-7)
+   * @param period_exponent PWM period exponent (0-7; larger returns InvalidParameter)
    * @param low_freq_range Enable low frequency range (8x multiplier)
    * @return DriverResult<void> Success or error
    *

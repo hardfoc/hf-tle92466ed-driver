@@ -99,20 +99,17 @@ for N reads.
 A reply is accepted only when all of these hold:
 
 1. MISO was driven (the word is not `0x00000000` or `0xFFFFFFFF`), otherwise `CommError::NoReply`.
-2. The CRC matches.
-3. The reply mode is the width the register is defined to answer with (`ExpectedReplyFor()`), so a stale 16-bit
+2. The reply is not a critical-fault frame (reply mode `10B`). Its bits `[31:24]` are don't care in the datasheet,
+   not a CRC, so the driver decides on the reply mode first and never CRC-checks a fault frame.
+3. The CRC matches.
+4. The reply mode is the width the register is defined to answer with (`ExpectedReplyFor()`), so a stale 16-bit
    reply cannot pass as a 22-bit feedback value.
 
 `Read()` makes two attempts before it gives up with `CRCError` (frames arrived, none were well formed) or
 `NoReply`. A critical-fault reply is not retried: it means the chip cannot serve any access, and the read fails
-with `CommError::BusError` (`DriverError::FaultDetected`). `LastCriticalFaultFlags()` and `SawCriticalFault()`
-keep the fault byte for the caller.
-
-!!! note "Fault frames and the CRC check"
-    The datasheet marks bits `[31:24]` of a critical-fault frame as don't care, but `Read()` checks the CRC before
-    it looks at the reply mode. A fault frame whose top byte does not happen to match the CRC is therefore
-    reported as `CRCError`, not `FaultDetected`. When reads fail with `CRCError` right after power-up, check the
-    supplies as well as the bus.
+with `CommError::BusError` (`DriverError::FaultDetected`), whatever the frame's top byte holds. `Write()` and
+`ReadMulti()` treat it the same way. `LastCriticalFaultFlags()` and `SawCriticalFault()` keep the fault byte for the
+caller.
 
 ## Critical fault frames
 

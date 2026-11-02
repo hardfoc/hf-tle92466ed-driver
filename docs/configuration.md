@@ -14,15 +14,16 @@ accepts the global configuration and channel modes only there.
 
 | `GlobalConfig` field | Default | Register | Effect |
 | --- | --- | --- | --- |
-| `crc_enabled` | `true` | `GLOBAL_CONFIG.CRC_EN` | The chip checks the CRC byte of each frame; the driver checks write replies too |
-| `spi_watchdog_enabled` | `true` | `GLOBAL_CONFIG.SPI_WD_EN` | Config Mode when `WD_TIME` runs out ([SPI watchdog](diagnostics.md#spi-watchdog)) |
+| `crc_enabled` | `false` | `GLOBAL_CONFIG.CRC_EN` | The chip checks the CRC byte of each frame; the driver checks write replies too |
+| `spi_watchdog_enabled` | `false` | `GLOBAL_CONFIG.SPI_WD_EN` | Config Mode when `WD_TIME` runs out ([SPI watchdog](diagnostics.md#spi-watchdog)) |
 | `clock_watchdog_enabled` | `true` | `GLOBAL_CONFIG.CLK_WD_EN` | Supervises f<sub>SYS</sub> (27 MHz to 29 MHz) |
 | `vio_5v` | `false` | `GLOBAL_CONFIG.VIO_SEL` | VIO monitoring thresholds for 5 V (`true`) or 3.3 V (`false`) |
-| `vbat_uv_voltage` | `4.0` V | `VBAT_TH` | VBAT under-voltage threshold |
-| `vbat_ov_voltage` | `41.0` V | `VBAT_TH` | VBAT over-voltage threshold |
+| `vbat_uv_voltage` | `7.0` V | `VBAT_TH` | VBAT under-voltage threshold |
+| `vbat_ov_voltage` | `40.0` V | `VBAT_TH` | VBAT over-voltage threshold |
 | `spi_watchdog_reload` | `1000` | `WD_RELOAD` | Initial `WD_TIME`, about 0.585 ms per count |
 
-The structure's defaults are not what `Init()` writes. `Init()` keeps the bus permissive for bring-up:
+The structure's defaults are exactly what `Init()` writes, so `ConfigureGlobal(GlobalConfig{})` changes nothing.
+`Init()` keeps the bus permissive for bring-up:
 
 | Setting | After `Init()` |
 | --- | --- |
@@ -49,7 +50,7 @@ Call `ConfigureGlobal()` once the bus is proven to turn the CRC check and the wa
 | `slew_rate` | `MEDIUM_2V5_US` | Output slew rate |
 | `diag_current` | `I_80UA` | Off-state diagnosis current source |
 | `open_load_threshold` | `3` | Open load when the current is below `n`/8 of setpoint plus dither; 0 disables |
-| `pwm_period_mantissa`, `pwm_period_exponent` | `0`, `0` | PWM target period; 0 leaves `PERIOD` unchanged |
+| `pwm_period_mantissa`, `pwm_period_exponent` | `0`, `0` | PWM target period (`PERIOD_MANT` 0 to 255, `PERIOD_EXP` 0 to 7; wider values return `InvalidParameter` before any write); mantissa 0 leaves `PERIOD` unchanged |
 | `auto_limit_disabled` | `false` | Disables the integrator auto-limit after setpoint changes |
 | `olsg_warning_enabled` | `false` | Reports the OLSG warning |
 | `min_int_thresh` | datasheet floor | `CTRL.MIN_INT_THRESH`; at 0 the power stage can stop switching |

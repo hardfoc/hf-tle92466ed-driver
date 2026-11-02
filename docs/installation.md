@@ -37,8 +37,17 @@ generated version header) and requires C++20 (`cxx_std_20`), so your target does
 | `HF_TLE92466ED_ENABLE_WARNINGS` | `OFF` | `-Wall -Wextra -Wpedantic` on targets that link the driver |
 | `HF_TLE92466ED_BUILD_TESTS` | `OFF` | Builds the host unit tests in `tests/` ([Testing and CI](testing.md)) |
 
-Use the driver from source (submodule or `add_subdirectory`). The install rules do not yet copy
-`src/tle92466ed.ipp`, which the header includes, so an installed copy does not build.
+### Installed package
+
+`cmake --install` copies the headers, the generated version header and `src/tle92466ed.ipp` (which the header
+includes) under `include/hf_tle92466ed/`, and a package config under `lib/cmake/hf_tle92466ed/`:
+
+```cmake
+find_package(hf_tle92466ed 1.0 REQUIRED CONFIG)
+target_link_libraries(my_app PRIVATE hf::tle92466ed)
+```
+
+The host test `hf_tle92466ed_install` installs into a scratch prefix and builds a consumer against it.
 
 ## ESP-IDF
 

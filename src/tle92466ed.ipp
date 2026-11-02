@@ -310,9 +310,12 @@ DriverResult<void> Driver<CommType>::applyDefaultConfig() noexcept {
   }
   crc_enabled_ = false;
 
-  // Set default VBAT thresholds (UV=7V, OV=40V)
+  // Default VBAT thresholds (UV=7V, OV=40V), taken from GlobalConfig{} so the
+  // structure's defaults and what Init() writes cannot drift apart.
   // Use internal version that doesn't check initialization (called during Init)
-  if (auto result = setVbatThresholdsInternal(7.0f, 40.0f); !result) {
+  constexpr GlobalConfig kDefaults{};
+  if (auto result = setVbatThresholdsInternal(kDefaults.vbat_uv_voltage, kDefaults.vbat_ov_voltage);
+      !result) {
     return tle::unexpected(result.error());
   }
 
@@ -1007,6 +1010,11 @@ DriverResult<void> Driver<CommType>::ConfigurePwmPeriodRaw(Channel channel, uint
     return tle::unexpected(DriverError::InvalidChannel);
   }
 
+  // PERIOD_EXP is bits 10:8 (datasheet 5.3, PERIOD register).
+  if (period_exponent > PERIOD::EXP_VALUE_MASK) {
+    return tle::unexpected(DriverError::InvalidParameter);
+  }
+
   // Build PERIOD register value
   uint16_t value = period_mantissa |
                    ((period_exponent & PERIOD::EXP_VALUE_MASK) << PERIOD::EXP_SHIFT) |
@@ -1218,6 +1226,14 @@ DriverResult<void> Driver<CommType>::ConfigureChannel(Channel channel, const Cha
     return tle::unexpected(DriverError::InvalidChannel);
   }
 
+  // PERIOD_MANT is 8 bits and PERIOD_EXP 3 bits (datasheet 5.3, PERIOD
+  // register). Reject wider values up front instead of truncating them into
+  // a different PWM period, and before any register of the channel changes.
+  if (config.pwm_period_mantissa > PERIOD::MANT_MASK ||
+      config.pwm_period_exponent > PERIOD::EXP_VALUE_MASK) {
+    return tle::unexpected(DriverError::InvalidParameter);
+  }
+
   comm_.Log(LogLevel::Info, "TLE92466ED",
             "Configuring channel: %s, Mode=%s, Current=%u mA, "
             "SlewRate=%s, DiagCurrent=%s, OL_Threshold=%u",
@@ -1280,7 +1296,8 @@ DriverResult<void> Driver<CommType>::ConfigureChannel(Channel channel, const Cha
   // Note: ChannelConfig still uses low-level parameters for backward compatibility
   // New code should use ConfigurePwmPeriod(period_us) directly
   if (config.pwm_period_mantissa > 0) {
-    if (auto result = ConfigurePwmPeriodRaw(channel, config.pwm_period_mantissa,
+    if (auto result = ConfigurePwmPeriodRaw(channel,
+                                            static_cast<uint8_t>(config.pwm_period_mantissa),
                                             config.pwm_period_exponent, false);
         !result) {
       return tle::unexpected(result.error());
@@ -2888,6 +2905,12 @@ DriverResult<SPIFrame> Driver<CommType>::transferFrame(const SPIFrame& tx_frame,
   SPIFrame rx_frame{};
   rx_frame.word = *comm_result;
 
+  // A critical fault frame carries no CRC (bits 31:24 are "don't care",
+  // datasheet 5.2.3.5): decide on the reply mode before checking the CRC.
+  if (rx_frame.rx_common.reply_mode == 0x02) {
+    return tle::unexpected(DriverError::FaultDetected);
+  }
+
   // Verify CRC if requested
   if (verify_crc) {
     if (!VerifyFrameCrc(rx_frame)) {
@@ -2909,10 +2932,8 @@ DriverResult<void> Driver<CommType>::checkSpiStatus(const SPIFrame& rx_frame) no
   if (rx_frame.rx_common.reply_mode != 0x00) {
     // For non-16-bit frames, check if it's a critical fault
     if (rx_frame.rx_common.reply_mode == 0x02) {
-      // Critical fault frame - extract and log fault flags
-      auto fault_flags = CriticalFaultFlags::Extract(rx_frame);
-      // Return hardware error for critical faults
-      return tle::unexpected(DriverError::HardwareError);
+      // Critical fault frame: the same error ReadRegister()/WriteRegister() report.
+      return tle::unexpected(DriverError::FaultDetected);
     }
     // 22-bit reply frames don't have status field, assume OK
     return {};

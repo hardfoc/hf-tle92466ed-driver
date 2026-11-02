@@ -22,6 +22,7 @@ ctest --test-dir build-host --output-on-failure
 | [`tests/test_transport.cpp`](../tests/test_transport.cpp) | Flush / command / dummy sequence, reply-width validation, `NoReply`, write status, CRC errors, `ReadMulti()`, critical faults |
 | [`tests/test_driver.cpp`](../tests/test_driver.cpp) | `Init()` (RESN pulse, EN, `ICVID`), wrong device, modes, setpoint encoding single and parallel, argument errors |
 | [`tests/mock_tle92466ed.hpp`](../tests/mock_tle92466ed.hpp) | The register model |
+| [`tests/check_install.cmake`](../tests/check_install.cmake) | `cmake --install` into a scratch prefix, then a `find_package(hf_tle92466ed)` consumer builds the driver from it |
 
 ## Documentation snippets
 

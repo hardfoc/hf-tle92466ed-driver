@@ -264,14 +264,28 @@ public:
             ESP_LOGE(TAG, "Buffer size mismatch: tx=%zu, rx=%zu", tx_data.size(), rx_data.size());
             return tle::unexpected(CommError::InvalidParameter);
         }
-        for (size_t i = 0; i < tx_data.size(); ++i) {
-            if (auto result = Transfer32(tx_data[i]); !result) {
-                return tle::unexpected(result.error());
-            } else {
-                rx_data[i] = *result;
-            }
+        /* The reply to a command is clocked out in the NEXT frame (datasheet
+         * 5.2.3, pipelined MISO), so another device's transaction between two
+         * frames of one access would take the TLE92466ED's reply with it.
+         * Hold the bus for the whole chain; each frame still gets its own CSN
+         * pulse, as the datasheet requires (5.2: every access ends with a
+         * rising CSN edge). */
+        esp_err_t lock = spi_device_acquire_bus(spi_device_, portMAX_DELAY);
+        if (lock != ESP_OK) {
+            ESP_LOGE(TAG, "spi_device_acquire_bus failed: %s", esp_err_to_name(lock));
+            return tle::unexpected(CommError::TransferError);
         }
-        return {};
+        CommResult<void> status{};
+        for (size_t i = 0; i < tx_data.size(); ++i) {
+            auto result = Transfer32(tx_data[i]);
+            if (!result) {
+                status = tle::unexpected(result.error());
+                break;
+            }
+            rx_data[i] = *result;
+        }
+        spi_device_release_bus(spi_device_);
+        return status;
     }
 
     /**
