@@ -6,7 +6,7 @@ The **TLE92466ED Test Framework** (`TLE92466ED_TestFramework.hpp`) provides prof
 testing infrastructure for ESP32-based examples, adapted from the HardFOC Internal
 Interface Wrap test framework.
 
-## 🎯 Purpose
+## Purpose
 
 - **Structured Testing**: Organize tests into logical sections
 - **Automatic Tracking**: Pass/fail counting and execution timing
@@ -14,7 +14,7 @@ Interface Wrap test framework.
 - **Task Isolation**: FreeRTOS task-based execution
 - **CI/CD Ready**: Structured output for automated testing
 
-## 📚 Framework Components
+## Framework Components
 
 ### 1. GPIO14 Test Progression Indicator
 
@@ -304,7 +304,7 @@ print_test_section_status(TAG, "TLE92466ED");
 
 ---
 
-## 🔧 Usage Guide
+## Usage Guide
 
 ### Basic Setup
 
@@ -389,7 +389,7 @@ extern "C" void app_main() {
 
 ---
 
-## 📊 Advanced Usage
+## Advanced Usage
 
 ### Custom Test Context
 
@@ -441,7 +441,7 @@ if (xSemaphoreTake(ctx.completion_semaphore, pdMS_TO_TICKS(60000))) {
 
 ---
 
-## 🎯 Best Practices
+## Best Practices
 
 ### 1. Test Organization
 
@@ -506,7 +506,7 @@ extern "C" void app_main() {
 
 ---
 
-## 📈 Performance Impact
+## Performance Impact
 
 ### Memory Overhead
 
@@ -531,7 +531,7 @@ extern "C" void app_main() {
 
 ---
 
-## 🔍 Debugging
+## Debugging
 
 ### Enable Framework Debug Output
 
@@ -562,7 +562,7 @@ grep "PASSED" output.log | awk '{print $NF}'
 
 ---
 
-## 🔗 Integration with CI/CD
+## Integration with CI/CD
 
 ### Structured Output Parsing
 
@@ -603,7 +603,7 @@ fi
 
 ---
 
-## 📚 References
+## References
 
 - [BasicUsageExample.cpp](../main/BasicUsageExample.cpp) - Example implementation
 - [HardFOC Internal TestFramework.h](

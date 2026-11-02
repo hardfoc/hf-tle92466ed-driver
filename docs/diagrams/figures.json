@@ -1,0 +1,15 @@
+{
+  "driver-layers": {
+    "title": "Three layers, one of them yours",
+    "alt": "Layer diagram: the application calls the hardware-agnostic TLE92466ED driver, which owns the central and per-channel register map, and uses the CRTP SPI interface that frames, checks and pipelines 32-bit transfers, which calls the platform port you write, which drives the SPI bus and the RESN, EN and FAULTN pins of the TLE92466ED.",
+    "description": "From top to bottom. Your application talks to one Driver<Comm> object per chip. The core owns the chip's register map (from inc/tle92466ed_registers.hpp): the central configuration and status registers, and the bank of channel registers that repeats for each of the six channels. The communication interface (tle92466ed::SpiInterface in inc/tle92466ed_spi_interface.hpp) is a CRTP base: it builds 32-bit frames with the CRC-8 SAE J1850 byte, runs the one-frame reply pipeline and validates every reply; the methods it dispatches to your class are listed from the header. The platform port is the only code you write. Below it is the chip.",
+    "profile": "overview",
+    "width": 1200,
+    "source": "docs/diagrams/figures/driver-layers.py",
+    "sources": [
+      "inc/tle92466ed_registers.hpp:CentralReg",
+      "inc/tle92466ed_registers.hpp:ChannelReg",
+      "inc/tle92466ed_spi_interface.hpp:SpiInterface"
+    ]
+  }
+}

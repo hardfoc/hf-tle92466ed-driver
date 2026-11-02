@@ -183,7 +183,7 @@ operating condition and should not trip the hardware FAULTN output.
 
 ## Related Documentation
 
-- [API Reference](../../docs/api_reference.md)
-- [Hardware Setup](../../docs/hardware_setup.md)
+- [API reference](../../docs/api-reference.md)
+- [Hardware](../../docs/hardware.md)
 - [Driver Integration Test](README_DRIVER_INTEGRATION_TEST.md)
 - [Resistive-Load Bench](README_RESISTIVE_LOAD_BENCH.md)

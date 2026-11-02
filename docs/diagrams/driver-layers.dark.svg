@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1154" viewBox="0 0 1200 1154" role="img" aria-labelledby="driver-layers-title driver-layers-desc" font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+<title id="driver-layers-title">Three layers, one of them yours</title>
+<desc id="driver-layers-desc">Layer diagram: the application calls the hardware-agnostic TLE92466ED driver, which owns the central and per-channel register map, and uses the CRTP SPI interface that frames, checks and pipelines 32-bit transfers, which calls the platform port you write, which drives the SPI bus and the RESN, EN and FAULTN pins of the TLE92466ED.</desc>
+<defs><marker id="fk-arrow-rail" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6C7889"/></marker></defs>
+<rect x="0.5" y="0.5" width="1199" height="1153" rx="16" fill="#0E131A" stroke="#283241"/>
+<text x="32" y="46.8" font-size="16" font-weight="700" letter-spacing="1.2" fill="#C7CBFF">ARCHITECTURE</text>
+<text x="32" y="85.6" font-size="32" font-weight="700" fill="#E8EDF3">Three layers, one of them yours</text>
+<text x="32" y="115.4" font-size="18" fill="#9AA6B5">The driver and the interface are the same on every MCU. The port is one class that moves 32-bit frames and sets three pins.</text>
+<rect x="32" y="131.4" width="1136" height="1" fill="#252F3C"/>
+<rect x="32" y="278.4" width="1136" height="379" rx="16" fill="#1C1F3D" stroke="#3B4080" stroke-width="1.2"/>
+<path d="M600 242.4 L600 274.4" fill="none" stroke="#6C7889" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#fk-arrow-rail)"/>
+<path d="M600 661.4 L600 693.4" fill="none" stroke="#6C7889" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#fk-arrow-rail)"/>
+<path d="M600 815.4 L600 847.4" fill="none" stroke="#6C7889" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#fk-arrow-rail)"/>
+<path d="M600 966.4 L600 998.4" fill="none" stroke="#6C7889" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#fk-arrow-rail)"/>
+<rect x="32" y="149.4" width="1136" height="89" rx="12" fill="#151C26" stroke="#3A4657" stroke-width="1"/>
+<rect x="32" y="157.4" width="4" height="73" rx="2" fill="#94A3B8"/>
+<rect x="32" y="697.4" width="1136" height="114" rx="12" fill="#1C1F3D" stroke="#8C93FF" stroke-width="1.4"/>
+<rect x="32" y="705.4" width="4" height="98" rx="2" fill="#8C93FF"/>
+<rect x="32" y="851.4" width="1136" height="111" rx="12" fill="#0F2A28" stroke="#2DD4BF" stroke-width="1.4"/>
+<rect x="32" y="859.4" width="4" height="95" rx="2" fill="#2DD4BF"/>
+<rect x="32" y="1002.4" width="1136" height="89" rx="12" fill="#151C26" stroke="#3A4657" stroke-width="1"/>
+<rect x="32" y="1010.4" width="4" height="73" rx="2" fill="#94A3B8"/>
+<text x="56" y="184.4" font-size="20" font-weight="700" fill="#E8EDF3">Your application</text>
+<text x="56" y="215" font-size="17" fill="#D2DAE4">valve control loop, state machine, diagnostics ...</text>
+<text x="48" y="335.4" font-size="16" font-weight="700" fill="#C7CBFF">Central configuration (0x00-0x3F)</text>
+<rect x="48" y="345.4" width="93.9" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="56" y="363.5" font-size="16" font-weight="700" fill="#C7CBFF">CH_CTRL</text>
+<rect x="149.9" y="345.4" width="158.9" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="157.9" y="363.5" font-size="16" font-weight="700" fill="#C7CBFF">GLOBAL_CONFIG</text>
+<rect x="316.8" y="345.4" width="146.8" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="324.8" y="363.5" font-size="16" font-weight="700" fill="#C7CBFF">GLOBAL_DIAG0</text>
+<rect x="471.6" y="345.4" width="142.6" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="479.6" y="363.5" font-size="16" font-weight="700" fill="#C7CBFF">GLOBAL_DIAG1</text>
+<rect x="622.2" y="345.4" width="146" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="630.2" y="363.5" font-size="16" font-weight="700" fill="#C7CBFF">GLOBAL_DIAG2</text>
+<rect x="776.2" y="345.4" width="95.9" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="784.2" y="363.5" font-size="16" font-weight="700" fill="#C7CBFF">VBAT_TH</text>
+<rect x="880.2" y="345.4" width="77.6" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="888.2" y="363.5" font-size="16" font-weight="700" fill="#C7CBFF">FB_FRZ</text>
+<rect x="965.8" y="345.4" width="80.9" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="973.8" y="363.5" font-size="16" font-weight="700" fill="#C7CBFF">FB_UPD</text>
+<rect x="48" y="379.4" width="122.9" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="56" y="397.5" font-size="16" font-weight="700" fill="#C7CBFF">WD_RELOAD</text>
+<rect x="178.9" y="379.4" width="167.6" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="186.9" y="397.5" font-size="16" font-weight="700" fill="#C7CBFF">DIAG_ERR_CHGR0</text>
+<rect x="354.6" y="379.4" width="163.5" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="362.6" y="397.5" font-size="16" font-weight="700" fill="#C7CBFF">DIAG_ERR_CHGR1</text>
+<rect x="526.1" y="379.4" width="166.9" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="534.1" y="397.5" font-size="16" font-weight="700" fill="#C7CBFF">DIAG_ERR_CHGR2</text>
+<rect x="701" y="379.4" width="189.4" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="709" y="397.5" font-size="16" font-weight="700" fill="#C7CBFF">DIAG_WARN_CHGR0</text>
+<rect x="898.4" y="379.4" width="185.3" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="906.4" y="397.5" font-size="16" font-weight="700" fill="#C7CBFF">DIAG_WARN_CHGR1</text>
+<rect x="48" y="413.4" width="188.6" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="56" y="431.5" font-size="16" font-weight="700" fill="#C7CBFF">DIAG_WARN_CHGR2</text>
+<rect x="244.6" y="413.4" width="143.2" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="252.6" y="431.5" font-size="16" font-weight="700" fill="#C7CBFF">FAULT_MASK0</text>
+<rect x="395.9" y="413.4" width="139.1" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="403.9" y="431.5" font-size="16" font-weight="700" fill="#C7CBFF">FAULT_MASK1</text>
+<rect x="542.9" y="413.4" width="142.5" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="550.9" y="431.5" font-size="16" font-weight="700" fill="#C7CBFF">FAULT_MASK2</text>
+<rect x="693.4" y="413.4" width="88.1" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="701.4" y="431.5" font-size="16" font-weight="700" fill="#C7CBFF">CLK_DIV</text>
+<rect x="789.5" y="413.4" width="93.5" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="797.5" y="431.5" font-size="16" font-weight="700" fill="#C7CBFF">SFF_BIST</text>
+<text x="48" y="469.4" font-size="16" font-weight="700" fill="#C7CBFF">Central status, read only (0x200-0x207)</text>
+<rect x="48" y="479.4" width="63" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="56" y="497.5" font-size="16" font-weight="700" fill="#C7CBFF">ICVID</text>
+<rect x="119" y="479.4" width="99.2" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="127" y="497.5" font-size="16" font-weight="700" fill="#C7CBFF">PIN_STAT</text>
+<rect x="226.1" y="479.4" width="91.7" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="234.1" y="497.5" font-size="16" font-weight="700" fill="#C7CBFF">FB_STAT</text>
+<rect x="325.8" y="479.4" width="134.9" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="333.8" y="497.5" font-size="16" font-weight="700" fill="#C7CBFF">FB_VOLTAGE1</text>
+<rect x="468.7" y="479.4" width="138.3" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="476.7" y="497.5" font-size="16" font-weight="700" fill="#C7CBFF">FB_VOLTAGE2</text>
+<rect x="615" y="479.4" width="85.4" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="623" y="497.5" font-size="16" font-weight="700" fill="#C7CBFF">CHIPID0</text>
+<rect x="708.4" y="479.4" width="81.3" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="716.4" y="497.5" font-size="16" font-weight="700" fill="#C7CBFF">CHIPID1</text>
+<rect x="797.7" y="479.4" width="84.7" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="805.7" y="497.5" font-size="16" font-weight="700" fill="#C7CBFF">CHIPID2</text>
+<text x="48" y="535.4" font-size="16" font-weight="700" fill="#C7CBFF">Channel bank, six times (CH4 0x20, CH5 0x30, CH0 0x40 ... CH3 0x70; feedback at +0x200)</text>
+<rect x="48" y="545.4" width="101.8" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="56" y="563.5" font-size="16" font-weight="700" fill="#C7CBFF">SETPOINT</text>
+<rect x="157.8" y="545.4" width="60.6" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="165.8" y="563.5" font-size="16" font-weight="700" fill="#C7CBFF">CTRL</text>
+<rect x="226.4" y="545.4" width="78.5" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="234.4" y="563.5" font-size="16" font-weight="700" fill="#C7CBFF">PERIOD</text>
+<rect x="312.9" y="545.4" width="181.7" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="320.9" y="563.5" font-size="16" font-weight="700" fill="#C7CBFF">INTEGRATOR_LIMIT</text>
+<rect x="502.6" y="545.4" width="158.6" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="510.6" y="563.5" font-size="16" font-weight="700" fill="#C7CBFF">DITHER_CLK_DIV</text>
+<rect x="669.2" y="545.4" width="130.2" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="677.2" y="563.5" font-size="16" font-weight="700" fill="#C7CBFF">DITHER_STEP</text>
+<rect x="807.4" y="545.4" width="131.1" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="815.4" y="563.5" font-size="16" font-weight="700" fill="#C7CBFF">DITHER_CTRL</text>
+<rect x="946.5" y="545.4" width="115.3" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="954.5" y="563.5" font-size="16" font-weight="700" fill="#C7CBFF">CH_CONFIG</text>
+<rect x="1069.8" y="545.4" width="67.4" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="1077.8" y="563.5" font-size="16" font-weight="700" fill="#C7CBFF">MODE</text>
+<rect x="48" y="579.4" width="53.3" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="56" y="597.5" font-size="16" font-weight="700" fill="#C7CBFF">TON</text>
+<rect x="109.3" y="579.4" width="175" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="117.3" y="597.5" font-size="16" font-weight="700" fill="#C7CBFF">CTRL_INT_THRESH</text>
+<rect x="292.3" y="579.4" width="70" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="300.3" y="597.5" font-size="16" font-weight="700" fill="#C7CBFF">FB_DC</text>
+<rect x="370.3" y="579.4" width="93.1" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="378.3" y="597.5" font-size="16" font-weight="700" fill="#C7CBFF">FB_VBAT</text>
+<rect x="471.4" y="579.4" width="96.1" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="479.4" y="597.5" font-size="16" font-weight="700" fill="#C7CBFF">FB_I_AVG</text>
+<rect x="575.6" y="579.4" width="137.3" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="583.6" y="597.5" font-size="16" font-weight="700" fill="#C7CBFF">FB_IMIN_IMAX</text>
+<rect x="720.9" y="579.4" width="132" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="728.9" y="597.5" font-size="16" font-weight="700" fill="#C7CBFF">FB_I_AVG_s16</text>
+<rect x="860.9" y="579.4" width="151.5" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="868.9" y="597.5" font-size="16" font-weight="700" fill="#C7CBFF">FB_INT_THRESH</text>
+<rect x="48" y="613.4" width="198.4" height="26" rx="13" fill="#1C1F3D" stroke="#3B4080" stroke-width="1"/>
+<text x="56" y="631.5" font-size="16" font-weight="700" fill="#C7CBFF">FB_PERIOD_MIN_MAX</text>
+<text x="48" y="307.4" font-size="17" font-weight="700" fill="#C7CBFF">HARDWARE-AGNOSTIC CORE</text>
+<text x="326.2" y="307.4" font-size="16" fill="#C7CBFF">tle92466ed::Driver&lt;Comm&gt;, inc/tle92466ed.hpp + src/tle92466ed.ipp</text>
+<text x="56" y="732.4" font-size="20" font-weight="700" fill="#C7CBFF">Communication interface</text>
+<text x="56" y="763" font-size="17" fill="#D2DAE4">tle92466ed::SpiInterface&lt;Self&gt;: CRTP, no virtual calls; 32-bit frames with CRC-8 SAE J1850,</text>
+<text x="56" y="787.7" font-size="17" fill="#D2DAE4">flush / command / dummy pipeline, reply width and CRC checked, critical-fault frames decoded</text>
+<text x="56" y="886.4" font-size="20" font-weight="700" fill="#A7F3E6">Platform port (your class)</text>
+<text x="56" y="915.6" font-size="16" font-family="'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace" fill="#D2DAE4">Init()  Deinit()  Transfer32()  TransferMulti()  Delay()  Configure()</text>
+<text x="56" y="938.8" font-size="16" font-family="'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace" fill="#D2DAE4">IsReady()  GetLastError()  ClearErrors()  GpioSet()  GpioRead()  Log()</text>
+<text x="56" y="1037.4" font-size="20" font-weight="700" fill="#E8EDF3">TLE92466ED</text>
+<text x="56" y="1068" font-size="17" fill="#D2DAE4">SPI mode 1 up to 8 MHz, 32-bit frames  /  RESN, EN in, FAULTN open drain out</text>
+<rect x="32" y="1103.8" width="14" height="14" rx="4" fill="#1C1F3D" stroke="#8C93FF" stroke-width="1.4"/>
+<text x="54" y="1118.4" font-size="16" fill="#9AA6B5">this library</text>
+<rect x="161.8" y="1103.8" width="14" height="14" rx="4" fill="#0F2A28" stroke="#2DD4BF" stroke-width="1.4"/>
+<text x="183.8" y="1118.4" font-size="16" fill="#9AA6B5">you write</text>
+<rect x="282.1" y="1103.8" width="14" height="14" rx="4" fill="#1B232E" stroke="#94A3B8" stroke-width="1.4"/>
+<text x="304.1" y="1118.4" font-size="16" fill="#9AA6B5">hardware</text>
+</svg>

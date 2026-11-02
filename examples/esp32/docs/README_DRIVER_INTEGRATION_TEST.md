@@ -738,7 +738,7 @@ This test suite covers all TLE92466ED driver functionality:
 
 ### Common Issues
 
-#### 1. All Tests Fail ❌
+#### 1. All Tests Fail
 
 **Symptom**: Every test returns FAILED
 
@@ -763,7 +763,7 @@ idf.py -p /dev/ttyUSB0 flash
 
 ---
 
-#### 2. HAL Initialization Fails ❌
+#### 2. HAL Initialization Fails
 
 **Symptom**: `test_hal_initialization` fails
 
@@ -780,7 +780,7 @@ idf.py -p /dev/ttyUSB0 flash
 
 ---
 
-#### 3. Driver Initialization Fails ❌
+#### 3. Driver Initialization Fails
 
 **Symptom**: `test_driver_initialization` fails
 
@@ -800,7 +800,7 @@ idf.py -p /dev/ttyUSB0 flash
 
 ---
 
-#### 4. Telemetry Tests Fail ⚠️
+#### 4. Telemetry Tests Fail
 
 **Symptom**: Telemetry reading functions fail
 

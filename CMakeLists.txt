@@ -40,6 +40,15 @@ if(HF_TLE92466ED_ENABLE_WARNINGS)
     endif()
 endif()
 
+#===============================================================================
+# Host unit tests (register model of the chip; no hardware)
+#===============================================================================
+option(HF_TLE92466ED_BUILD_TESTS "Build the host unit tests in tests/" OFF)
+if(HF_TLE92466ED_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
+
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 

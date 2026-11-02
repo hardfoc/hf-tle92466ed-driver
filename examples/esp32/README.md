@@ -7,7 +7,7 @@ predictable; if you want to retarget another ESP32-S3 board, edit the
 constants in `main/esp32_tle92466ed_test_config.hpp` (single source of
 truth for every pin used by the example).
 
-## 🎯 Overview
+## Overview
 
 The examples exercise the TLE92466ED six-channel low-side solenoid
 driver from a freshly powered-on board through:
@@ -23,7 +23,7 @@ driver from a freshly powered-on board through:
 - A **build/flash automation layer** (`scripts/`) that reads the
   declarative `app_config.yml` and orchestrates ESP-IDF.
 
-## 🔧 Hardware Requirements
+## Hardware Requirements
 
 ### ESP32-S3 development board
 - Any ESP32-S3 dev board with the GPIOs in the table below available.
@@ -49,7 +49,7 @@ driver from a freshly powered-on board through:
 ### Load Connections
 Connect your solenoids/loads to the TLE92466ED output channels (OUT0-OUT5) with appropriate current ratings.
 
-## 🛠️ Console / serial output
+## Console / serial output
 
 The included `sdkconfig.defaults.esp32s3` pins the primary console to
 the **ESP32-S3 native USB-Serial-JTAG bridge** (the device that
@@ -57,7 +57,7 @@ enumerates as `/dev/ttyACM0` on Linux / `COMx` on Windows). UART0 is
 not used as the primary console because its default pins (GPIO43/44)
 are usually not routed to the host on USB-only ESP32-S3 dev boards.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Prerequisites
 
@@ -133,7 +133,7 @@ idf.py monitor
 
 **Documentation**: [Solenoid Control Test](docs/readme_solenoid_control_test.md)
 
-### 🟡 Advanced Examples
+### Advanced Examples
 
 #### `parallel_mode`
 **High-current parallel channel operation**
@@ -157,7 +157,7 @@ idf.py monitor
 - Noise reduction techniques
 - Precision current shaping
 
-### 🔵 Application Examples
+### Application Examples
 
 #### `automotive_demo`
 **Automotive solenoid control**
@@ -173,7 +173,7 @@ idf.py monitor
 - Flow rate control
 - PID control implementation
 
-### 🟠 Testing Examples
+### Testing Examples
 
 #### `stress_test`
 **Reliability and stress testing**
@@ -189,7 +189,7 @@ idf.py monitor
 - Accuracy validation
 - Factory calibration routines
 
-## 🛠️ Build System
+## Build System
 
 ### App Configuration
 
@@ -231,7 +231,7 @@ python3 scripts/get_app_info.py info basic_usage
 - **RelWithDebInfo**: Release with debug symbols
 - **MinSizeRel**: Optimized for minimum size
 
-## 📊 Configuration
+## Configuration
 
 ### Hardware Configuration File
 
@@ -285,7 +285,7 @@ struct Temperature {
 };
 ```text
 
-## 🔍 Debugging
+## Debugging
 
 ### Serial Monitor
 
@@ -326,7 +326,7 @@ CONFIG_TLE92466ED_DEBUG_ENABLED=y # Driver debug
    - Run `./scripts/setup_repo.sh`
    - Check C++20 compiler support
 
-## 📚 Documentation
+## Documentation
 
 ### Example Documentation
 
@@ -344,7 +344,7 @@ Each example has detailed documentation in `docs/`:
 - [HAL Implementation Guide](../../docs/08_HAL_Implementation.md)
 - [Register Map](../../docs/03_Register_Map.md)
 
-## 🧪 Testing
+## Testing
 
 ### Unit Tests
 
@@ -369,7 +369,7 @@ The examples are automatically tested in CI with:
 - Debug and Release builds
 - Hardware-in-the-loop testing
 
-## 🤝 Contributing
+## Contributing
 
 1. **Adding New Examples**
    - Create source file in `main/`
@@ -387,12 +387,12 @@ The examples are automatically tested in CI with:
    - Modify `sdkconfig` for ESP32-C6 specific changes
    - Document changes in README
 
-## 📄 License
+## License
 
 This software is released into the **Public Domain**. You can use, modify, and distribute
 it freely without any restrictions.
 
-## 🔗 Resources
+## Resources
 
 - [TLE92466ED Datasheet](../../Datasheet/)
 - [ESP32-C6 Technical Reference](https://www.espressif.com/sites/default/files/documentation/esp32-c6_technical_reference_manual_en.pdf)

@@ -1,0 +1,73 @@
+{
+  "central": [
+    "CH_CTRL",
+    "GLOBAL_CONFIG",
+    "GLOBAL_DIAG0",
+    "GLOBAL_DIAG1",
+    "GLOBAL_DIAG2",
+    "VBAT_TH",
+    "FB_FRZ",
+    "FB_UPD",
+    "WD_RELOAD",
+    "DIAG_ERR_CHGR0",
+    "DIAG_ERR_CHGR1",
+    "DIAG_ERR_CHGR2",
+    "DIAG_WARN_CHGR0",
+    "DIAG_WARN_CHGR1",
+    "DIAG_WARN_CHGR2",
+    "FAULT_MASK0",
+    "FAULT_MASK1",
+    "FAULT_MASK2",
+    "CLK_DIV",
+    "SFF_BIST"
+  ],
+  "status": [
+    "ICVID",
+    "PIN_STAT",
+    "FB_STAT",
+    "FB_VOLTAGE1",
+    "FB_VOLTAGE2",
+    "CHIPID0",
+    "CHIPID1",
+    "CHIPID2"
+  ],
+  "channel": [
+    "SETPOINT",
+    "CTRL",
+    "PERIOD",
+    "INTEGRATOR_LIMIT",
+    "DITHER_CLK_DIV",
+    "DITHER_STEP",
+    "DITHER_CTRL",
+    "CH_CONFIG",
+    "MODE",
+    "TON",
+    "CTRL_INT_THRESH",
+    "FB_DC",
+    "FB_VBAT",
+    "FB_I_AVG",
+    "FB_IMIN_IMAX",
+    "FB_I_AVG_s16",
+    "FB_INT_THRESH",
+    "FB_PERIOD_MIN_MAX"
+  ],
+  "hooks": [
+    "Init",
+    "Deinit",
+    "Transfer32",
+    "TransferMulti",
+    "Delay",
+    "Configure",
+    "IsReady",
+    "GetLastError",
+    "ClearErrors",
+    "GpioSet",
+    "GpioRead",
+    "Log"
+  ],
+  "sources": [
+    "inc/tle92466ed_registers.hpp:CentralReg",
+    "inc/tle92466ed_registers.hpp:ChannelReg",
+    "inc/tle92466ed_spi_interface.hpp:SpiInterface"
+  ]
+}

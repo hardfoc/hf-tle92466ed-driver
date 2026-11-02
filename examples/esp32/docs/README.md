@@ -1,12 +1,12 @@
 # TLE92466ED ESP32 Examples Documentation
 
-## 📚 Documentation Index
+## Documentation Index
 
 Complete documentation for TLE92466ED driver examples on ESP32-C6.
 
 ---
 
-## 🎯 Quick Start
+## Quick Start
 
 | Document | Purpose | When to Read |
 |----------|---------|--------------|
@@ -17,7 +17,7 @@ Complete documentation for TLE92466ED driver examples on ESP32-C6.
 
 ---
 
-## 📖 Documentation Structure
+## Documentation Structure
 
 ### 1. [Driver Integration Test Suite](readme_driver_integration_test.md)
 
@@ -95,7 +95,7 @@ Complete documentation for TLE92466ED driver examples on ESP32-C6.
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -145,7 +145,7 @@ Complete documentation for TLE92466ED driver examples on ESP32-C6.
 
 ---
 
-## 📊 Example Overview
+## Example Overview
 
 ### Driver Integration Test
 
@@ -201,7 +201,7 @@ Complete documentation for TLE92466ED driver examples on ESP32-C6.
 
 ---
 
-## 🔧 Configuration Overview
+## Configuration Overview
 
 ### Hardware Configuration
 
@@ -271,29 +271,29 @@ apps:
 
 ---
 
-## 🧪 Test Framework Features
+## Test Framework Features
 
 The examples use a test framework with:
 
-#### ✅ FreeRTOS Task-Based Execution
+#### FreeRTOS Task-Based Execution
 - Each test runs in isolated task
 - Custom stack size per test (default: 8KB)
 - Automatic semaphore synchronization
 - 30-second timeout protection
 
-#### ✅ GPIO14 Progress Indicator
+#### GPIO14 Progress Indicator
 - **Visual feedback** on oscilloscope/logic analyzer
 - **Toggle**: HIGH/LOW on test completion
 - **Blink patterns**: 5 blinks at section boundaries
 - Hardware-level progress tracking
 
-#### ✅ Automatic Result Tracking
+#### Automatic Result Tracking
 - Pass/fail counting
 - Microsecond-precision execution timing
 - Success rate calculation
 - Formatted summaries
 
-#### ✅ Test Section Management
+#### Test Section Management
 - Compile-time section enable/disable
 - Organized test grouping
 - Custom blink patterns per section
@@ -302,7 +302,7 @@ The examples use a test framework with:
 
 ---
 
-## 📈 Example Output
+## Example Output
 
 ### Test Execution
 
@@ -343,7 +343,7 @@ I (5000) TLE92466ED_Basic: ✅ ALL TESTS PASSED!
 
 ---
 
-## 🐛 Troubleshooting Quick Reference
+## Troubleshooting Quick Reference
 
 ### Common Issues
 
@@ -358,7 +358,7 @@ I (5000) TLE92466ED_Basic: ✅ ALL TESTS PASSED!
 
 ---
 
-## 📦 Project Structure
+## Project Structure
 
 ```text
 examples/esp32/
@@ -395,7 +395,7 @@ examples/esp32/
 
 ---
 
-## 🔗 Related Documentation
+## Related Documentation
 
 ### Driver Documentation
 - [Driver Overview](../../../README.md) - Main driver README
@@ -415,7 +415,7 @@ examples/esp32/
 
 ---
 
-## 🎓 Learning Path
+## Learning Path
 
 ### Beginner Path
 
@@ -443,7 +443,7 @@ examples/esp32/
 
 ---
 
-## 💡 Tips and Best Practices
+## Tips and Best Practices
 
 ### Development Tips
 
@@ -471,7 +471,7 @@ examples/esp32/
 
 ---
 
-## 🆘 Getting Help
+## Getting Help
 
 ### Documentation Issues
 
@@ -507,7 +507,7 @@ If tests fail or hardware doesn't work:
 
 ---
 
-## 📊 Example Statistics
+## Example Statistics
 
 ### Driver Integration Test
 
@@ -552,7 +552,7 @@ If tests fail or hardware doesn't work:
 
 ---
 
-## 🎉 Success Criteria
+## Success Criteria
 
 You've successfully set up the examples when:
 
