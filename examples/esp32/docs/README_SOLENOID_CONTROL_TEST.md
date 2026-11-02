@@ -706,7 +706,7 @@ For Solenoid 2 (parallel pair), the current is set on the primary channel (CH1),
 
 ### Common Issues
 
-#### 1. Solenoids Not Responding ❌
+#### 1. Solenoids Not Responding
 
 **Symptom**: No current flow, solenoids not activating
 
@@ -730,7 +730,7 @@ Checklist:
 
 ---
 
-#### 2. Current Not Regulating Correctly ⚠️
+#### 2. Current Not Regulating Correctly
 
 **Symptom**: Actual current doesn't match setpoint
 
@@ -757,7 +757,7 @@ Checklist:
 
 ---
 
-#### 3. ADC Reading Incorrect ⚠️
+#### 3. ADC Reading Incorrect
 
 **Symptom**: ADC voltage doesn't match control source
 
@@ -784,7 +784,7 @@ Checklist:
 
 ---
 
-#### 4. Parallel Operation Not Working ❌
+#### 4. Parallel Operation Not Working
 
 **Symptom**: Solenoid 2 not working or current not shared
 
@@ -813,7 +813,7 @@ Checklist:
 
 ---
 
-#### 5. Faults Detected ⚠️
+#### 5. Faults Detected
 
 **Symptom**: Telemetry shows faults or warnings
 

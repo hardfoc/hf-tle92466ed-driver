@@ -5,7 +5,7 @@
 This guide explains all configuration files and settings for the TLE92466ED ESP32
 examples, including hardware configuration, build settings, and test options.
 
-## 📁 Configuration File Structure
+## Configuration File Structure
 
 ```text
 examples/esp32/
@@ -517,7 +517,7 @@ targets:
 
 ---
 
-## 🔧 Configuration Workflows
+## Configuration Workflows
 
 ### Development Setup
 
@@ -621,7 +621,7 @@ idf.py -DCMAKE_BUILD_TYPE=Debug build
 
 ---
 
-## 📚 Configuration Reference
+## Configuration Reference
 
 ### File Purposes Summary
 

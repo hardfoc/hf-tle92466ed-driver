@@ -1,18 +1,8 @@
----
-layout: default
-title: "📚 Documentation"
-description: "Complete documentation for the HardFOC TLE92466ED Driver"
-nav_order: 2
-parent: "HardFOC TLE92466ED Driver"
-permalink: /docs/
-has_children: true
----
-
 # HF-TLE92466ED Documentation
 
 Welcome! This directory contains step-by-step guides for installing, building, and using the **HF-TLE92466ED** library.
 
-## 📚 Documentation Structure
+## Documentation Structure
 
 ### **Getting Started**
 
@@ -36,7 +26,7 @@ Welcome! This directory contains step-by-step guides for installing, building, a
 
 ---
 
-## 🚀 Quick Start Path
+## Quick Start Path
 
 **New to TLE92466ED?** Follow this recommended path:
 
@@ -48,7 +38,7 @@ Welcome! This directory contains step-by-step guides for installing, building, a
 
 ---
 
-## 💡 Need Help?
+## Need Help?
 
 - **🐛 Found a bug?** Check the [Troubleshooting](troubleshooting.md) guide
 - **❓ Have questions?** Review the [API Reference](api_reference.md)

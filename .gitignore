@@ -134,3 +134,4 @@ Thumbs.db
 **/*.bak*
 *.bak
 examples/esp32/sdkconfig
+site/
