@@ -183,7 +183,7 @@ A **FAIL** line means the ICC loop did not settle within the tolerance in the ho
 
 ## Related Documentation
 
-- [API Reference](../../docs/api_reference.md)
-- [Hardware Setup](../../docs/hardware_setup.md)
+- [API reference](../../docs/api-reference.md)
+- [Hardware](../../docs/hardware.md)
 - [Driver Integration Test](README_DRIVER_INTEGRATION_TEST.md)
 - [Diagnostics & BIST](README_DIAGNOSTICS_AND_BIST.md)
