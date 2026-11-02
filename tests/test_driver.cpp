@@ -133,3 +133,30 @@ TEST_CASE("ConfigureGlobal(GlobalConfig{}) keeps the configuration Init() wrote"
   CHECK_EQ(chip.regs()[CentralReg::GLOBAL_CONFIG] & tle92466ed::GLOBAL_CONFIG::SPI_WD_EN, 0U);
   CHECK_EQ(chip.regs()[CentralReg::GLOBAL_CONFIG] & tle92466ed::GLOBAL_CONFIG::CRC_EN, 0U);
 }
+
+// Datasheet 5.3 PERIOD register: PERIOD_MANT is bits 7:0 and PERIOD_EXP bits 10:8. A wider value
+// used to be truncated into the 8-bit parameter (300 became 44) and written without complaint.
+TEST_CASE("ConfigureChannel() rejects a PWM period mantissa or exponent wider than the PERIOD fields") {
+  MockTle92466ed chip;
+  Driver drv(chip);
+  REQUIRE(drv.Init().has_value());
+  const uint16_t period = tle92466ed::GetChannelRegister(Channel::CH0, ChannelReg::PERIOD);
+  chip.regs()[period] = 0x1234;
+
+  tle92466ed::ChannelConfig cfg{};
+  cfg.pwm_period_mantissa = 300;
+  auto r = drv.ConfigureChannel(Channel::CH0, cfg);
+  REQUIRE(!r.has_value());
+  CHECK(r.error() == DriverError::InvalidParameter);
+  CHECK_EQ(chip.regs()[period], 0x1234U);
+
+  cfg.pwm_period_mantissa = 200;
+  cfg.pwm_period_exponent = 8;
+  auto e = drv.ConfigureChannel(Channel::CH0, cfg);
+  REQUIRE(!e.has_value());
+  CHECK(e.error() == DriverError::InvalidParameter);
+
+  cfg.pwm_period_exponent = 3;
+  REQUIRE(drv.ConfigureChannel(Channel::CH0, cfg).has_value());
+  CHECK_EQ(chip.regs()[period] & 0x07FFU, 200U | (3U << 8));
+}

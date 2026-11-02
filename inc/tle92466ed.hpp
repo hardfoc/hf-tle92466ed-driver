@@ -597,7 +597,7 @@ public:
    *
    * @param channel Channel to configure
    * @param period_mantissa PWM period mantissa (0-255)
-   * @param period_exponent PWM period exponent (0-7)
+   * @param period_exponent PWM period exponent (0-7; larger returns InvalidParameter)
    * @param low_freq_range Enable low frequency range (8x multiplier)
    * @return DriverResult<void> Success or error
    *

@@ -1010,6 +1010,11 @@ DriverResult<void> Driver<CommType>::ConfigurePwmPeriodRaw(Channel channel, uint
     return tle::unexpected(DriverError::InvalidChannel);
   }
 
+  // PERIOD_EXP is bits 10:8 (datasheet 5.3, PERIOD register).
+  if (period_exponent > PERIOD::EXP_VALUE_MASK) {
+    return tle::unexpected(DriverError::InvalidParameter);
+  }
+
   // Build PERIOD register value
   uint16_t value = period_mantissa |
                    ((period_exponent & PERIOD::EXP_VALUE_MASK) << PERIOD::EXP_SHIFT) |
@@ -1221,6 +1226,14 @@ DriverResult<void> Driver<CommType>::ConfigureChannel(Channel channel, const Cha
     return tle::unexpected(DriverError::InvalidChannel);
   }
 
+  // PERIOD_MANT is 8 bits and PERIOD_EXP 3 bits (datasheet 5.3, PERIOD
+  // register). Reject wider values up front instead of truncating them into
+  // a different PWM period, and before any register of the channel changes.
+  if (config.pwm_period_mantissa > PERIOD::MANT_MASK ||
+      config.pwm_period_exponent > PERIOD::EXP_VALUE_MASK) {
+    return tle::unexpected(DriverError::InvalidParameter);
+  }
+
   comm_.Log(LogLevel::Info, "TLE92466ED",
             "Configuring channel: %s, Mode=%s, Current=%u mA, "
             "SlewRate=%s, DiagCurrent=%s, OL_Threshold=%u",
@@ -1283,7 +1296,8 @@ DriverResult<void> Driver<CommType>::ConfigureChannel(Channel channel, const Cha
   // Note: ChannelConfig still uses low-level parameters for backward compatibility
   // New code should use ConfigurePwmPeriod(period_us) directly
   if (config.pwm_period_mantissa > 0) {
-    if (auto result = ConfigurePwmPeriodRaw(channel, config.pwm_period_mantissa,
+    if (auto result = ConfigurePwmPeriodRaw(channel,
+                                            static_cast<uint8_t>(config.pwm_period_mantissa),
                                             config.pwm_period_exponent, false);
         !result) {
       return tle::unexpected(result.error());

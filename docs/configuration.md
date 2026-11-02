@@ -50,7 +50,7 @@ Call `ConfigureGlobal()` once the bus is proven to turn the CRC check and the wa
 | `slew_rate` | `MEDIUM_2V5_US` | Output slew rate |
 | `diag_current` | `I_80UA` | Off-state diagnosis current source |
 | `open_load_threshold` | `3` | Open load when the current is below `n`/8 of setpoint plus dither; 0 disables |
-| `pwm_period_mantissa`, `pwm_period_exponent` | `0`, `0` | PWM target period; 0 leaves `PERIOD` unchanged |
+| `pwm_period_mantissa`, `pwm_period_exponent` | `0`, `0` | PWM target period (`PERIOD_MANT` 0 to 255, `PERIOD_EXP` 0 to 7; wider values return `InvalidParameter` before any write); mantissa 0 leaves `PERIOD` unchanged |
 | `auto_limit_disabled` | `false` | Disables the integrator auto-limit after setpoint changes |
 | `olsg_warning_enabled` | `false` | Reports the OLSG warning |
 | `min_int_thresh` | datasheet floor | `CTRL.MIN_INT_THRESH`; at 0 the power stage can stop switching |
