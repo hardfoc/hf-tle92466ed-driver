@@ -123,10 +123,13 @@ public:
   void setPin(CtrlPin pin, GpioSignal s) noexcept {
     pins_[static_cast<uint8_t>(pin)] = s;
   }
-  /// Every reply becomes a critical fault frame carrying @p flags (bits 7..0).
-  void setCriticalFault(bool on, uint8_t flags = 0x00) noexcept {
+  /// Every reply becomes a critical fault frame carrying @p flags (bits 7..0). Bits 31:24 of that
+  /// frame are "don't care" (datasheet 5.2.3.5, no CRC), so the mock fills them with
+  /// @p dont_care instead of a CRC.
+  void setCriticalFault(bool on, uint8_t flags = 0x00, uint8_t dont_care = 0x5A) noexcept {
     critical_ = on;
     fault_flags_ = flags;
+    fault_dont_care_ = dont_care;
   }
   /// MISO stays low: no device on the bus.
   void setIdleMiso(bool on) noexcept {
@@ -165,7 +168,7 @@ private:
     tle92466ed::SPIFrame f{};
     f.word = mosi;
     if (critical_) {
-      return WithCrc((0x2U << 22) | fault_flags_);
+      return (static_cast<uint32_t>(fault_dont_care_) << 24) | (0x2U << 22) | fault_flags_;
     }
     if (!tle92466ed::VerifyFrameCrc(f)) {
       return Reply16(0, false, static_cast<uint8_t>(tle92466ed::SPIStatus::CRC_ERROR));
@@ -189,6 +192,7 @@ private:
   uint32_t pending_{0};
   uint32_t elapsed_us_{0};
   uint8_t fault_flags_{0};
+  uint8_t fault_dont_care_{0x5A};
   uint8_t write_status_{0};
   bool ready_{false};
   bool critical_{false};

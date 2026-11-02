@@ -2888,6 +2888,12 @@ DriverResult<SPIFrame> Driver<CommType>::transferFrame(const SPIFrame& tx_frame,
   SPIFrame rx_frame{};
   rx_frame.word = *comm_result;
 
+  // A critical fault frame carries no CRC (bits 31:24 are "don't care",
+  // datasheet 5.2.3.5): decide on the reply mode before checking the CRC.
+  if (rx_frame.rx_common.reply_mode == 0x02) {
+    return tle::unexpected(DriverError::FaultDetected);
+  }
+
   // Verify CRC if requested
   if (verify_crc) {
     if (!VerifyFrameCrc(rx_frame)) {
@@ -2909,10 +2915,8 @@ DriverResult<void> Driver<CommType>::checkSpiStatus(const SPIFrame& rx_frame) no
   if (rx_frame.rx_common.reply_mode != 0x00) {
     // For non-16-bit frames, check if it's a critical fault
     if (rx_frame.rx_common.reply_mode == 0x02) {
-      // Critical fault frame - extract and log fault flags
-      auto fault_flags = CriticalFaultFlags::Extract(rx_frame);
-      // Return hardware error for critical faults
-      return tle::unexpected(DriverError::HardwareError);
+      // Critical fault frame: the same error ReadRegister()/WriteRegister() report.
+      return tle::unexpected(DriverError::FaultDetected);
     }
     // 22-bit reply frames don't have status field, assume OK
     return {};

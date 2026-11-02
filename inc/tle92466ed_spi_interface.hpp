@@ -958,15 +958,17 @@ inline CommResult<uint32_t> SpiInterface<Derived>::Read(uint16_t address, bool v
     }
     saw_any_frame = true;
 
-    if (!VerifyFrameCrc(candidate)) {
-      continue;
-    }
-
+    /* Critical fault frame (UV / clock / supplies) first: its bits 31:24 are
+     * "don't care", not a CRC (datasheet 5.2.3.5), so a CRC check would reject
+     * it and report CRCError instead of the fault. The device is answering
+     * truthfully that it cannot serve the read, so this is not retried. */
     if (candidate.rx_common.reply_mode == 0x02) {
-      /* Critical fault frame (UV / clock / supplies). The device is answering
-       * truthfully that it cannot serve the read, so this is not retried. */
       NoteCriticalFault(candidate);
       return tle::unexpected(CommError::BusError);
+    }
+
+    if (!VerifyFrameCrc(candidate)) {
+      continue;
     }
 
     const bool width_ok =
@@ -1077,14 +1079,15 @@ inline CommResult<void> SpiInterface<Derived>::ReadMulti(
     if (candidate.word == 0U || candidate.word == 0xFFFFFFFFU) {
       continue; /* Undriven MISO. */
     }
-    if (!VerifyFrameCrc(candidate)) {
-      continue;
-    }
     if (candidate.rx_common.reply_mode == 0x02) {
-      /* Critical fault (UV / clock / supplies). The device is telling us it
-       * cannot serve any of these reads, so abandon the whole burst. */
+      /* Critical fault (UV / clock / supplies), checked before the CRC because
+       * bits 31:24 of this frame are "don't care" (datasheet 5.2.3.5). The
+       * device cannot serve any of these reads, so abandon the whole burst. */
       NoteCriticalFault(candidate);
       return tle::unexpected(CommError::BusError);
+    }
+    if (!VerifyFrameCrc(candidate)) {
+      continue;
     }
     const ExpectedReply expected = ExpectedReplyFor(addresses[i]);
     const bool width_ok = (expected == ExpectedReply::Bits22)
@@ -1130,6 +1133,14 @@ inline CommResult<void> SpiInterface<Derived>::Write(uint16_t address, uint16_t 
   SPIFrame rx_frame{};
   rx_frame.word = rx_words[2];
 
+  // Critical fault frame first — keep the cause byte for the caller. Its bits
+  // 31:24 are "don't care", not a CRC (datasheet 5.2.3.5), so checking the CRC
+  // first turned a supply/clock fault into CommError::CRCError.
+  if (rx_frame.rx_common.reply_mode == 0x02) {
+    NoteCriticalFault(rx_frame);
+    return tle::unexpected(CommError::BusError);
+  }
+
   // Verify CRC if requested
   if (verify_crc && !VerifyFrameCrc(rx_frame)) {
     return tle::unexpected(CommError::CRCError);
@@ -1142,10 +1153,6 @@ inline CommResult<void> SpiInterface<Derived>::Write(uint16_t address, uint16_t 
       // Status indicates an error
       return tle::unexpected(CommError::TransferError);
     }
-  } else if (rx_frame.rx_common.reply_mode == 0x02) {
-    // Critical fault frame — keep the cause byte for the caller.
-    NoteCriticalFault(rx_frame);
-    return tle::unexpected(CommError::BusError);
   }
 
   return {};

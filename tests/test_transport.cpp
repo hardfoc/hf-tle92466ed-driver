@@ -98,3 +98,38 @@ TEST_CASE("a critical fault frame fails the read and keeps the fault byte") {
   CHECK(chip.SawCriticalFault());
   CHECK_EQ(chip.LastCriticalFaultFlags(), 0x1FU);
 }
+
+// Datasheet 5.2.3.5: bits 31:24 of the critical fault reply frame are "don't care", not a CRC. The
+// frame must be recognised by its reply mode (10B) whatever those bits hold.
+TEST_CASE("a critical fault frame is recognised before the CRC check (bits 31:24 are don't care)") {
+  for (uint8_t dont_care : {uint8_t{0x00}, uint8_t{0x5A}, uint8_t{0xFF}}) {
+    MockTle92466ed chip;
+    chip.setCriticalFault(true, 0xE1, dont_care); // supplies ok, reference clock missing
+    auto v = chip.Read(CentralReg::GLOBAL_CONFIG);
+    REQUIRE(!v.has_value());
+    CHECK(v.error() == CommError::BusError);
+    CHECK(chip.SawCriticalFault());
+    CHECK_EQ(chip.LastCriticalFaultFlags(), 0xE1U);
+  }
+}
+
+TEST_CASE("Write() reports a critical fault frame as BusError, not CRCError") {
+  MockTle92466ed chip;
+  chip.setCriticalFault(true, 0x1F, 0x00);
+  auto w = chip.Write(CentralReg::VBAT_TH, 0x1234);
+  REQUIRE(!w.has_value());
+  CHECK(w.error() == CommError::BusError);
+  CHECK(chip.SawCriticalFault());
+}
+
+TEST_CASE("ReadMulti() abandons the burst on a critical fault frame") {
+  MockTle92466ed chip;
+  chip.setCriticalFault(true, 0x1F, 0x33);
+  const uint16_t addrs[] = {CentralReg::ICVID, CentralReg::GLOBAL_CONFIG};
+  uint32_t values[2] = {};
+  uint16_t mask = 0xFFFF;
+  auto r = chip.ReadMulti(addrs, values, mask);
+  REQUIRE(!r.has_value());
+  CHECK(r.error() == CommError::BusError);
+  CHECK_EQ(mask, 0U);
+}

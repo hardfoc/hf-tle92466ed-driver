@@ -112,4 +112,7 @@ TEST_CASE("a critical fault reply surfaces as FaultDetected") {
   auto r = drv.ReadRegister(CentralReg::GLOBAL_DIAG0);
   REQUIRE(!r.has_value());
   CHECK(r.error() == DriverError::FaultDetected);
+  auto w = drv.WriteRegister(CentralReg::VBAT_TH, 0x0101, true, false);
+  REQUIRE(!w.has_value());
+  CHECK(w.error() == DriverError::FaultDetected);
 }

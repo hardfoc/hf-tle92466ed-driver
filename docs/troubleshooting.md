@@ -11,7 +11,6 @@ problems (no reply, bad replies) apart from chip state (wrong mode, a fault the 
 | --- | --- | --- |
 | `Init()` returns `DeviceNotResponding` | MISO idle: no VIO, CSN not reaching the chip, MISO not connected | Measure VIO at pin 8; scope CSN and SO during `Init()` |
 | `Init()` returns `FaultDetected` | Every reply is a critical-fault frame | VDD (4.5 V to 5.5 V at pin 29) first, then the clock source |
-| Reads fail with `CRCError` right after power-up | A critical-fault frame whose top byte is not a valid CRC ([SPI protocol](spi-protocol.md#how-a-reply-is-validated)) | Check VDD as for `FaultDetected` |
 | `Init()` returns `WrongDeviceID` | `ICVID` is not `0xC1xx`: bits shifted by a wrong SPI mode, or another device on the same CSN | SPI mode 1; one CSN per device |
 | `Init()` returns `ConfigurationError` | `OTP_VIRGIN`: the part's calibration OTP is not programmed | Use a production part |
 | `CRCError` or `SPIFrameError` now and then | Frames not exactly 32 bits, CSN high time under 600 ns, clock too fast for the wiring | One 4-byte transfer per CSN; lower SCK to 1 MHz; shorten the wires |
