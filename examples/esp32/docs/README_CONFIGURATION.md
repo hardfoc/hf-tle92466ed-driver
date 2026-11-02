@@ -119,7 +119,7 @@ struct TestConfig {
 
 | Setting | Default | Range | Notes |
 |---------|---------|-------|-------|
-| `FREQUENCY` | 1000000 | 100000-10000000 | SPI clock (Hz, datasheet: 0.1-10MHz) |
+| `FREQUENCY` | 1000000 | up to 8000000 | SPI clock (Hz, datasheet 5.1.4: f_SCK max 8 MHz) |
 | `MODE` | 1 | 0-3 | SPI mode (TLE92466ED requires Mode 1: CPOL=0, CPHA=1) |
 | `QUEUE_SIZE` | 7 | 1-10 | Transaction queue depth |
 
@@ -132,7 +132,7 @@ struct TestConfig {
 - **100kHz**: Debug/troubleshooting
 - **1MHz**: Default, reliable (recommended)
 - **2-4MHz**: Higher performance
-- **8-10MHz**: Maximum (may require shorter cables, datasheet max: 10MHz)
+- **8MHz**: Maximum (may require shorter cables, datasheet max: 8 MHz)
 
 #### Current Limits (`CurrentLimits`)
 

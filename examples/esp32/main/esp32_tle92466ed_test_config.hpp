@@ -112,13 +112,14 @@ struct ADCConfig {
  * The TLE92466ED supports SPI frequencies up to 8MHz.
  * We use 1MHz for reliable communication with standard wiring.
  *
- * CS Timing Requirements (per TLE92466ED datasheet):
- * - tCSS (CS setup): CS must be asserted (LOW) at least 50ns BEFORE first SCK edge
- * - tCSH (CS hold): CS must remain asserted at least 50ns AFTER last SCK edge
- * - tCSI (CS inactive): CS must be deasserted (HIGH) at least 100ns between transactions
+ * CS Timing Requirements (TLE92466ED datasheet 5.1.4, Table 18):
+ * - t_CSN_LEAD: CS asserted (LOW) at least 250 ns before the first rising SCK edge
+ * - t_CSN_LAG: CS held asserted at least 250 ns after the last falling SCK edge
+ * - t_CSN_TD: CS deasserted (HIGH) at least 600 ns between frames
  *
  * cs_ena_pretrans and cs_ena_posttrans are in clock cycles.
- * At 1MHz: 1 cycle = 1000ns, so 2 cycles = 2000ns (well above 50ns minimum)
+ * At 1 MHz: 1 cycle = 1000 ns, above the 250 ns lead/lag minimum. At 8 MHz one
+ * cycle is 125 ns, so use at least 2 cycles there.
  */
 struct SPIParams {
     static constexpr uint32_t FREQUENCY = 1000000;   ///< 1MHz SPI frequency

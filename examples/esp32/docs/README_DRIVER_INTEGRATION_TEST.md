@@ -850,7 +850,7 @@ idf.py -p /dev/ttyUSB0 flash
 
 ### SPI Performance
 
-- **Clock Frequency**: 1MHz (datasheet range: 0.1MHz - 10MHz)
+- **Clock Frequency**: 1MHz (datasheet maximum: 8 MHz)
 - **Transaction Time**: ~32μs per 32-bit frame
 - **Register Read**: ~100μs (including overhead)
 - **Register Write**: ~80μs (including overhead)
