@@ -79,9 +79,9 @@ FAULTN is open drain: enable a pull-up on the MCU or fit one to VIO.
 
 The ESP32 examples use
 [`esp32_tle92466ed_bus.hpp`](../examples/esp32/main/esp32_tle92466ed_bus.hpp): an ESP-IDF `spi_master` port with
-one `spi_device_transmit()` per frame, GPIO control for RESN and EN, and `ESP_LOG` output. It assumes the
-TLE92466ED has the bus to itself: it does not take the bus lock across `TransferMulti()`. Start from it for any
-ESP-IDF target and add `spi_device_acquire_bus()` if the bus is shared.
+one `spi_device_transmit()` per frame, GPIO control for RESN and EN, and `ESP_LOG` output. `TransferMulti()` holds
+the bus with `spi_device_acquire_bus()` for the whole chain, so it is safe on a bus shared with other devices. Start
+from it for any ESP-IDF target.
 
 ## Check your port
 
