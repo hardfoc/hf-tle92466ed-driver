@@ -1,106 +1,70 @@
 # Installation
 
-This guide covers how to obtain and integrate the TLE92466ED driver library into your project.
+Add the driver to a CMake or ESP-IDF project. It is a header-only C++20 library with no dependencies.
 
-## Prerequisites
+## Requirements
 
-Before installing the driver, ensure you have:
+- A C++20 compiler: GCC 10+, Clang 12+ or a current MSVC. On C++23 the driver uses `std::expected`; on C++20 it
+  uses the polyfill in [`inc/tle92466ed_expected.hpp`](../inc/tle92466ed_expected.hpp).
+- A little-endian target: the frame CRC is computed over the frame's bytes in memory, and a `static_assert`
+  stops the build on a big-endian one.
+- No RTOS, heap or exceptions: every call is `noexcept` and returns a `tle92466ed::DriverResult<T>`.
 
-- **C++20 Compiler**: GCC 10+, Clang 11+, or MSVC 2022+ (C++23 `std::expected` is used automatically if available)
-- **Build System**: Make, CMake, or ESP-IDF (depending on your platform)
-- **Platform SDK**: ESP-IDF, STM32 HAL, Arduino, or your platform's SPI driver
+## Get the source
 
-## Obtaining the Source
-
-### Option 1: Git Clone
+A git submodule keeps the driver pinned to a version you chose:
 
 ```bash
-git clone https://github.com/n3b3x/hf-tle92466ed-driver.git
-cd hf-tle92466ed-driver
-```text
+git submodule add https://github.com/hardfoc/hf-tle92466ed-driver.git external/hf-tle92466ed-driver
+git submodule update --init external/hf-tle92466ed-driver
+```
 
-### Option 2: Copy Files
+Only `inc/`, `src/`, `cmake/` and `CMakeLists.txt` are needed to build. The examples have their own submodule
+(`examples/esp32/scripts`); you do not need it to use the driver.
 
-Copy the following files into your project:
-
-```cpp
-inc/
-  ├── tle92466ed.hpp
-  ├── tle92466ed_spi_interface.hpp
-  ├── tle92466ed_registers.hpp
-  └── tle92466ed_expected.hpp
-src/
-  └── tle92466ed.cpp
-```cpp
-
-## Integration Methods
-
-### Using CMake
-
-Add the driver as a subdirectory in your `CMakeLists.txt`:
+## CMake
 
 ```cmake
 add_subdirectory(external/hf-tle92466ed-driver)
-target_link_libraries(your_target PRIVATE hf_tle92466ed)
-target_include_directories(your_target PRIVATE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/hf-tle92466ed-driver/inc
-)
+target_link_libraries(my_app PRIVATE hf_tle92466ed)   # or the alias hf::tle92466ed
+```
+
+The `hf_tle92466ed` target is an `INTERFACE` library: it carries the include directories (including the
+generated version header) and requires C++20 (`cxx_std_20`), so your target does not need to set either.
+
+| Option | Default | Effect |
+| --- | --- | --- |
+| `HF_TLE92466ED_ENABLE_WARNINGS` | `OFF` | `-Wall -Wextra -Wpedantic` on targets that link the driver |
+| `HF_TLE92466ED_BUILD_TESTS` | `OFF` | Builds the host unit tests in `tests/` ([Testing and CI](testing.md)) |
+
+Use the driver from source (submodule or `add_subdirectory`). The install rules do not yet copy
+`src/tle92466ed.ipp`, which the header includes, so an installed copy does not build.
+
+## ESP-IDF
+
+The ESP-IDF component wrapper is
+[`examples/esp32/components/hf_tle92466ed/`](../examples/esp32/components/hf_tle92466ed/CMakeLists.txt). Copy that
+folder into your project's `components/` (or point `EXTRA_COMPONENT_DIRS` at it) and set the
+`HF_TLE92466ED_ROOT` cache variable to the driver checkout; the wrapper stops with a clear message when the path is
+wrong. Your component then declares `REQUIRES hf_tle92466ed`.
+
+## How the build is organised
+
+| Layer | File | Role |
+| --- | --- | --- |
+| Settings | [`cmake/hf_tle92466ed_build_settings.cmake`](../cmake/hf_tle92466ed_build_settings.cmake) | Include directories, version: the single source of truth |
+| Library | [`CMakeLists.txt`](../CMakeLists.txt) | Interface library, install and package export |
+| ESP-IDF | [`examples/esp32/components/hf_tle92466ed/CMakeLists.txt`](../examples/esp32/components/hf_tle92466ed/CMakeLists.txt) | IDF component wrapper over the same settings |
+
+The implementation lives in [`src/tle92466ed.ipp`](../src/tle92466ed.ipp), which `tle92466ed.hpp` includes; do
+not compile it on its own. The version is set once in the settings file and written into `tle92466ed_version.h`
+at configure time. Read it at run time:
+
 ```cpp
+const char* v = tle92466ed::Driver<MySpi>::GetDriverVersion();   // "1.0.0"
+```
 
-### Using ESP-IDF Component
+## Next
 
-The driver can be used as an ESP-IDF component. Add it to your `components` directory:
-
-```cmake
-# In your main CMakeLists.txt
-idf_component_register(
-    SRCS "your_code.cpp"
-    INCLUDE_DIRS "."
-    REQUIRES hf_tle92466ed
-)
-```cpp
-
-### Manual Integration
-
-1. Copy the driver files to your project
-2. Add the `inc/` directory to your include path
-3. Include the header:
-
-   ```cpp
-   #include "tle92466ed.hpp"
-```cpp
-
-4. Compile with C++20 support:
-
-   ```bash
-   g++ -std=c++20 -I inc/ your_code.cpp src/tle92466ed.cpp
-```cpp
-
-## Verification
-
-To verify the installation:
-
-1. Include the header in a test file:
-
-   ```cpp
-   #include "tle92466ed.hpp"
-```cpp
-
-2. Compile a simple test:
-
-   ```bash
-   g++ -std=c++20 -I inc/ -c src/tle92466ed.cpp -o test.o
-```cpp
-
-3. If compilation succeeds, the library is properly installed.
-
-## Next Steps
-
-- Follow the [Quick Start](quickstart.md) guide to create your first application
-- Review [Hardware Setup](hardware_setup.md) for wiring instructions
-- Check [Platform Integration](platform_integration.md) to implement the SPI interface
-
----
-
-**Navigation**
-⬅️ [Back to Index](index.md) | [Next: Quick Start ➡️](quickstart.md)
+[Quickstart](quickstart.md) wires the chip and drives a channel; [Porting](porting.md) writes the SPI interface for
+your MCU.

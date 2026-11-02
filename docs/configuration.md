@@ -1,202 +1,84 @@
 # Configuration
 
-This guide covers all configuration options available for the TLE92466ED driver.
+Every field of `GlobalConfig` and `ChannelConfig`, the defaults `Init()` writes, and the compiled examples that
+apply them.
 
-## Global Configuration
+Both structures are in [`inc/tle92466ed.hpp`](../inc/tle92466ed.hpp). Apply them in Config Mode: the chip
+accepts the global configuration and channel modes only there.
 
-### Basic Global Setup
-
-```cpp
-tle92466ed::GlobalConfig global_config;
-global_config.crc_enabled = true;
-global_config.spi_watchdog_enabled = true;
-global_config.clock_watchdog_enabled = true;
-global_config.vio_5v = false;  // false = 3.3V, true = 5.0V
-global_config.vbat_uv_voltage = 4.0f;   // UV threshold in volts
-global_config.vbat_ov_voltage = 41.0f;  // OV threshold in volts
-global_config.spi_watchdog_reload = 1000;
-
-driver.ConfigureGlobal(global_config);
-```text
-
-### CRC Configuration
+## Global configuration
 
 ```cpp
-driver.SetCrcEnabled(true);  // Enable CRC checking (recommended)
-```cpp
+--8<-- "tests/docs/configuration.cpp:global"
+```
 
-- **Enabled**: All SPI frames include CRC-8 (SAE J1850) for error detection
-- **Disabled**: No CRC checking (faster, but less reliable)
+| `GlobalConfig` field | Default | Register | Effect |
+| --- | --- | --- | --- |
+| `crc_enabled` | `true` | `GLOBAL_CONFIG.CRC_EN` | The chip checks the CRC byte of each frame; the driver checks write replies too |
+| `spi_watchdog_enabled` | `true` | `GLOBAL_CONFIG.SPI_WD_EN` | Config Mode when `WD_TIME` runs out ([SPI watchdog](diagnostics.md#spi-watchdog)) |
+| `clock_watchdog_enabled` | `true` | `GLOBAL_CONFIG.CLK_WD_EN` | Supervises f<sub>SYS</sub> (27 MHz to 29 MHz) |
+| `vio_5v` | `false` | `GLOBAL_CONFIG.VIO_SEL` | VIO monitoring thresholds for 5 V (`true`) or 3.3 V (`false`) |
+| `vbat_uv_voltage` | `4.0` V | `VBAT_TH` | VBAT under-voltage threshold |
+| `vbat_ov_voltage` | `41.0` V | `VBAT_TH` | VBAT over-voltage threshold |
+| `spi_watchdog_reload` | `1000` | `WD_RELOAD` | Initial `WD_TIME`, about 0.585 ms per count |
 
-### VBAT Thresholds
+The structure's defaults are not what `Init()` writes. `Init()` keeps the bus permissive for bring-up:
 
-```cpp
-// High-level API (recommended)
-driver.SetVbatThresholds(4.0f, 41.0f);  // UV=4V, OV=41V
+| Setting | After `Init()` |
+| --- | --- |
+| CRC check (`CRC_EN`) | Off; the driver still sends correct CRCs |
+| SPI watchdog | Off |
+| Clock watchdog | On |
+| VIO | 3.3 V thresholds |
+| VBAT thresholds | 7 V under-voltage, 40 V over-voltage |
+| Every channel | `ICC` mode, setpoint 0, slew rate 2.5 V/µs, `MIN_INT_THRESH` at the datasheet floor |
 
-// Low-level API (direct register control)
-driver.SetVbatThresholdsRaw(25, 253);  // Register values
-```cpp
+Call `ConfigureGlobal()` once the bus is proven to turn the CRC check and the watchdog on. `SetCrcEnabled()`,
+`SetVbatThresholds()` and `SetVioLevel()` change one setting at a time.
 
-**Threshold Range**: 0V to ~41.4V (calculated as `register_value * 0.16208V`)
-
-## Channel Configuration
-
-### Basic Channel Setup
-
-```cpp
-tle92466ed::ChannelConfig config;
-config.mode = tle92466ed::ChannelMode::ICC;
-config.current_setpoint_ma = 1500;  // 1.5A
-config.slew_rate = tle92466ed::SlewRate::MEDIUM_2V5_US;
-config.diag_current = tle92466ed::DiagCurrent::I_80UA;
-config.open_load_threshold = 3;  // 3/8 threshold
-
-driver.ConfigureChannel(tle92466ed::Channel::CH0, config);
-```cpp
-
-### Channel Modes
-
-#### ICC Mode (Integrated Current Control)
+## Channel configuration
 
 ```cpp
-config.mode = tle92466ed::ChannelMode::ICC;
-```cpp
+--8<-- "tests/docs/configuration.cpp:channel"
+```
 
-- **Purpose**: Precise current regulation with 15-bit resolution
-- **Use Case**: Solenoids, valves requiring constant current
-- **Features**: Automatic current regulation, PWM-based control
+| `ChannelConfig` field | Default | Effect |
+| --- | --- | --- |
+| `mode` | `ICC` | Channel mode ([Current control](current-control.md#channel-modes)) |
+| `current_setpoint_ma` | `0` | Setpoint in mA, 0 to 2000 (register scale; 1500 specified) |
+| `slew_rate` | `MEDIUM_2V5_US` | Output slew rate |
+| `diag_current` | `I_80UA` | Off-state diagnosis current source |
+| `open_load_threshold` | `3` | Open load when the current is below `n`/8 of setpoint plus dither; 0 disables |
+| `pwm_period_mantissa`, `pwm_period_exponent` | `0`, `0` | PWM target period; 0 leaves `PERIOD` unchanged |
+| `auto_limit_disabled` | `false` | Disables the integrator auto-limit after setpoint changes |
+| `olsg_warning_enabled` | `false` | Reports the OLSG warning |
+| `min_int_thresh` | datasheet floor | `CTRL.MIN_INT_THRESH`; at 0 the power stage can stop switching |
+| `pwm_period_calc_mode` | `false` | PWM controller ignores falling dither slopes |
+| `deep_dither_enabled` | `false` | Deep dither |
+| `dither_step_size`, `dither_steps`, `dither_flat` | `0` | Raw dither shape; 0 leaves dither unchanged |
 
-#### Direct Drive Modes
+| `SlewRate` | Typical | `DiagCurrent` | Typical |
+| --- | --- | --- | --- |
+| `SLOW_1V0_US` | 1 V/µs | `I_80UA` | 80 µA |
+| `MEDIUM_2V5_US` | 2.5 V/µs | `I_190UA` | 190 µA |
+| `FAST_5V0_US` | 5 V/µs | `I_720UA` | 720 µA |
+| `FASTEST_10V0_US` | 10 V/µs | `I_1250UA` | 1250 µA |
 
-```cpp
-// SPI-controlled on-time
-config.mode = tle92466ed::ChannelMode::DIRECT_DRIVE_SPI;
+Slew rates are typical at VBAT = 14 V into 10 Ω; the datasheet allows half to twice the value. A faster slew lowers
+switching losses and raises emissions.
 
-// External pin control
-config.mode = tle92466ed::ChannelMode::DIRECT_DRIVE_DRV0;
-config.mode = tle92466ed::ChannelMode::DIRECT_DRIVE_DRV1;
-```cpp
-
-- **Purpose**: Direct control via SPI or external pins
-- **Use Case**: Simple on/off control, external timing
-
-#### Free-Running Measurement
-
-```cpp
-config.mode = tle92466ed::ChannelMode::FREE_RUN_MEAS;
-```cpp
-
-- **Purpose**: Continuous current sensing without output control
-- **Use Case**: Diagnostics, current monitoring
-
-### Current Settings
+## Parallel pairs
 
 ```cpp
-// Single channel mode (0-2000 mA)
-driver.SetCurrentSetpoint(tle92466ed::Channel::CH0, 1500);  // 1.5A
+--8<-- "tests/docs/configuration.cpp:parallel"
+```
 
-// Parallel mode (0-4000 mA)
-driver.SetCurrentSetpoint(tle92466ed::Channel::CH0, 3000, true);  // 3A
-```cpp
+[Current control](current-control.md#parallel-channels) lists the pairs and what happens to the slave channel.
 
-**Current Range**:
+## Clock source
 
-- **Single channel**: 0-2000 mA (1.5A typical continuous, 2.0A max)
-- **Parallel mode**: 0-4000 mA (2.7A typical continuous, 4.0A max)
-- **Resolution**: 15-bit (0.061mA per LSB single, 0.122mA parallel)
+`ConfigureClockSource(ClockSource::ExternalClockPll, f_clk_Hz)` switches the PLL to the CLK pin (1 MHz to 8 MHz)
+and computes the dividers for f<sub>SYS</sub> = 28 MHz; `ClockSource::InternalOscillator` switches back. Config
+Mode only. The evaluation PCB drives CLK from a 2 MHz oscillator.
 
-### PWM Configuration
-
-```cpp
-// High-level API (recommended)
-driver.ConfigurePwmPeriod(tle92466ed::Channel::CH0, 100.0f);  // 100 µs period
-
-// Low-level API (direct control)
-driver.ConfigurePwmPeriodRaw(tle92466ed::Channel::CH0, 
-                            100,    // mantissa
-                            3,      // exponent
-                            false); // low_freq_range
-```cpp
-
-**PWM Period Range**: ~0.125 µs to ~32.64 ms
-
-### Dither Configuration
-
-```cpp
-// High-level API (recommended)
-driver.ConfigureDither(tle92466ed::Channel::CH0, 
-                       50.0f,   // 50 mA amplitude
-                       1000.0f, // 1000 Hz frequency
-                       false);  // not parallel mode
-
-// Low-level API (direct control)
-driver.ConfigureDitherRaw(tle92466ed::Channel::CH0,
-                          100,  // step_size
-                          10,   // num_steps
-                          5);   // flat_steps
-```text
-
-**Dither Amplitude**: 0-1800 mA (configurable)
-
-### Slew Rate
-
-```cpp
-config.slew_rate = tle92466ed::SlewRate::SLOW_1V0_US;      // 1.0 V/µs (low EMI)
-config.slew_rate = tle92466ed::SlewRate::MEDIUM_2V5_US;    // 2.5 V/µs (standard)
-config.slew_rate = tle92466ed::SlewRate::FAST_5V0_US;      // 5.0 V/µs (fast)
-config.slew_rate = tle92466ed::SlewRate::FASTEST_10V0_US;  // 10.0 V/µs (maximum)
-```cpp
-
-## Parallel Operation
-
-### Enabling Parallel Mode
-
-```cpp
-// Pair channels 0 and 3
-driver.SetParallelOperation(tle92466ed::ParallelPair::CH0_CH3, true);
-
-// Pair channels 1 and 2
-driver.SetParallelOperation(tle92466ed::ParallelPair::CH1_CH2, true);
-
-// Pair channels 4 and 5
-driver.SetParallelOperation(tle92466ed::ParallelPair::CH4_CH5, true);
-```cpp
-
-**Parallel Pairs**:
-
-- CH0/CH3: Doubles current capability (up to 4A)
-- CH1/CH2: Doubles current capability (up to 4A)
-- CH4/CH5: Doubles current capability (up to 4A)
-
-**Note**: When in parallel mode, set current with `parallel_mode = true` parameter.
-
-## Default Values
-
-### Global Defaults
-
-- CRC: Enabled
-- SPI Watchdog: Enabled
-- Clock Watchdog: Enabled
-- VIO: 3.3V mode
-- VBAT UV: ~4V
-- VBAT OV: ~41V
-
-### Channel Defaults
-
-- Mode: ICC
-- Current: 0 mA
-- Slew Rate: MEDIUM_2V5_US
-- Diagnostic Current: I_80UA
-- Open Load Threshold: 3/8
-
-## Next Steps
-
-- Review [Examples](examples.md) for configuration examples
-- Check [API Reference](api_reference.md) for all configuration methods
-- See [Troubleshooting](troubleshooting.md) for configuration issues
-
----
-
-**Navigation**
-⬅️ [Platform Integration](platform_integration.md) | [Next: Examples ➡️](examples.md) | [Back to Index](index.md)
+Next: [Porting](porting.md).

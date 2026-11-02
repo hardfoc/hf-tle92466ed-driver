@@ -26,7 +26,7 @@ apps:
   # Driver Integration Test Suite
   # --------------------------------------------------------------------------
   driver_integration_test:
-    description: "Comprehensive driver integration test suite (no hardware required)"
+    description: "Driver API test suite against a connected TLE92466ED; no loads needed"
     source_file: "driver_integration_test.cpp"
     category: "test"
     idf_versions: ["release/v5.5"]
@@ -64,7 +64,7 @@ apps:
   # Parker LM-Pro 24V proportional cycle test (single channel, real hw)
   # --------------------------------------------------------------------------
   lm_pro_cycle_test:
-    description: "Cycle a Parker LM-Pro 24V proportional valve on TLE92466ED CH5 (full-flow ramp + diagnostics)"
+    description: "Parker LM-Pro 24 V proportional valve on CH5: full-flow current ramp and diagnostics"
     source_file: "lm_pro_cycle_test.cpp"
     category: "test"
     idf_versions: ["release/v5.5"]
@@ -85,7 +85,7 @@ apps:
   # Solenoid Control Test (Real Hardware)
   # --------------------------------------------------------------------------
   solenoid_control_test:
-    description: "Real hardware solenoid control test with ADC-based current control"
+    description: "Two solenoids, one on a single channel and one on a parallel pair, setpoint from an ADC input"
     source_file: "solenoid_control_test.cpp"
     category: "test"
     idf_versions: ["release/v5.5"]
@@ -107,7 +107,7 @@ apps:
   # Resistive-Load Bench (300 Ω on CH0) - Phase 7
   # --------------------------------------------------------------------------
   resistive_load_bench:
-    description: "300 Ω resistive bench: ICC setpoint sweep + atomic feedback verification"
+    description: "300 Ω load on CH0: setpoint sweep checked against the averaged feedback"
     source_file: "resistive_load_bench.cpp"
     category: "test"
     idf_versions: ["release/v5.5"]
@@ -127,7 +127,7 @@ apps:
   # Diagnostics + BIST example - Phase 7
   # --------------------------------------------------------------------------
   diagnostics_and_bist:
-    description: "SFF_BIST, PIN_STAT, FAULT_MASK, supply-monitor self-test"
+    description: "SFF_BIST, PIN_STAT, FAULT_MASK and the supply-monitor self-test"
     source_file: "diagnostics_and_bist.cpp"
     category: "test"
     idf_versions: ["release/v5.5"]

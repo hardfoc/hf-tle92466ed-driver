@@ -30,7 +30,7 @@ bool configure_valve(Driver& driver) {
   ch.current_setpoint_ma = 0;                           // set the real target in Mission Mode
   ch.slew_rate = tle92466ed::SlewRate::MEDIUM_2V5_US;
   ch.diag_current = tle92466ed::DiagCurrent::I_80UA;    // off-state open-load / short detection
-  ch.open_load_threshold = 3;                           // OL threshold code: 0 = off, 1..7
+  ch.open_load_threshold = 3;                           // open load below 3/8 of the setpoint
   return driver.ConfigureChannel(Channel::CH2, ch).has_value();
 }
 // --8<-- [end:channel]

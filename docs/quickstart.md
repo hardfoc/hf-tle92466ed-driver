@@ -1,196 +1,80 @@
-# Quick Start
+# Quickstart
 
-This guide will get you up and running with the TLE92466ED driver in just a few steps.
+Regulate a solenoid current from your MCU: wire the SPI bus and three control pins, write a small port class,
+call five driver functions.
 
-## Prerequisites
+!!! warning "Before you energise a coil"
+    Use a current-limited VBAT supply for the first run and start with a low setpoint. Every inductive load needs
+    its freewheeling path: connect each channel's FWDx pin to the high side of its load (see
+    [Hardware](hardware.md#load-connection)). The example drives 500 mA into CH0.
 
-- [Driver installed](installation.md)
-- [Hardware wired](hardware_setup.md)
-- [SPI interface implemented](platform_integration.md)
+## 1. Wire it
 
-## Minimal Example
+| MCU | TLE92466ED | Notes |
+| --- | --- | --- |
+| SPI SCLK, MOSI, MISO, CS | SCK (6), SI (7), SO (9), CSN (5) | SPI mode 1, up to 8 MHz; start at 1 MHz |
+| GPIO out | RESN (26) | Reset, active low; the driver pulses it in `Init()` |
+| GPIO out | EN (27) | Output enable, active high; the driver sets it in `Init()` |
+| GPIO in | FAULTN (11) | Open drain, active low: pull it up to VIO |
+| 3.3 V or 5 V | VIO (8) | The MCU's I/O voltage; sets the SO level |
+| 5 V | VDD (29) | 4.5 V to 5.5 V supply for the chip |
+| GND | GND, GNDPx | Common ground between the MCU, VDD and VBAT |
 
-Here's a complete working example:
+VBAT (pin 22) is the load supply, 6 V to 18 V. The [Hardware](hardware.md) page has every pin, the load
+connection and the timing.
 
-```cpp
-#include "tle92466ed.hpp"
+## 2. Add the driver
 
-// 1. Implement the SPI interface (see platform_integration.md)
-class MySpi : public tle92466ed::SpiInterface<MySpi> {
-public:
-    tle92466ed::CommResult<uint32_t> Transfer32(uint32_t tx_data) noexcept {
-        // One 32-bit full-duplex frame; manage CS here
-        return rx_word;
-    }
-    tle92466ed::CommResult<void> TransferMulti(
-        std::span<const uint32_t> tx,
-        std::span<uint32_t> rx) noexcept {
-        // Keep CS asserted for all words (required for pipelined reads)
-        return {};
-    }
-    // ... Init, Delay, Configure, GpioSet, GpioRead, Log, etc.
-};
+Add the repository as a submodule and link the `hf_tle92466ed` CMake target (or include `inc/` and build with
+C++20). [Installation](installation.md) covers CMake and ESP-IDF.
 
-// 2. Create instances
-MySpi spi;
-tle92466ed::Driver driver(spi);
-
-// 3. Initialize
-if (auto result = driver.Init(); !result) {
-    // Handle error
-    return;
-}
-
-// 4. Enter mission mode
-driver.EnterMissionMode();
-
-// 5. Configure channel 0 for 1.5A current control
-driver.SetChannelMode(tle92466ed::Channel::CH0, tle92466ed::ChannelMode::ICC);
-driver.SetCurrentSetpoint(tle92466ed::Channel::CH0, 1500); // 1500 mA
-
-// 6. Enable channel
-driver.EnableChannel(tle92466ed::Channel::CH0, true);
-```cpp
-
-## Step-by-Step Explanation
-
-### Step 1: Include the Header
-
-```cpp
-#include "tle92466ed.hpp"
-```cpp
-
-This includes the main driver class and all necessary types.
-
-### Step 2: Implement the SPI Interface
-
-You need to implement the `SpiInterface` for your platform. See [Platform Integration](platform_integration.md) for detailed examples.
-
-```cpp
-class MySpi : public tle92466ed::SpiInterface<MySpi> {
-public:
-    tle92466ed::CommResult<uint32_t> Transfer32(uint32_t tx_data) noexcept {
-        return rx_word;
-    }
-    tle92466ed::CommResult<void> TransferMulti(
-        std::span<const uint32_t> tx,
-        std::span<uint32_t> rx) noexcept {
-        return {};
-    }
-    // ... remaining required methods
-};
+```bash
+git submodule add https://github.com/hardfoc/hf-tle92466ed-driver.git external/hf-tle92466ed-driver
 ```
 
-### Step 3: Create Driver Instance
+## 3. Write the port
 
-```cpp
-MySpi spi;
-tle92466ed::Driver driver(spi);
-```cpp
+The port is the only platform code. It moves 32-bit frames over SPI, sets RESN and EN, reads FAULTN and waits.
+Replace the `platform_*` calls with your SDK's.
 
-The constructor takes a reference to your SPI interface implementation.
+```cpp title="my_spi.hpp"
+--8<-- "tests/docs/my_spi.hpp:port"
+```
 
-### Step 4: Initialize
+[Porting](porting.md) explains each method, the frame rules and how to check a port.
 
-```cpp
-if (auto result = driver.Init(); !result) {
-    // Handle error - result.error() contains DriverError
-    return;
-}
-```cpp
+## 4. Drive a channel
 
-### Step 5: Enter Mission Mode
+```cpp title="main.cpp"
+--8<-- "tests/docs/quickstart.cpp:quickstart"
+```
 
-```cpp
-driver.EnterMissionMode();
-```text
+What each step does:
 
-Mission mode enables channel control. Configuration changes require Config Mode.
+1. `Init()` pulses RESN, asserts EN, reads `ICVID` (expects `0xC1xx`), writes a default configuration and leaves
+   the chip in Config Mode. Nothing else works until it succeeds.
+2. `ConfigurePwmPeriod()` sets the channel's PWM target (110 Hz to 4 kHz). `ConfigureDither()` sets the dither and
+   starts the channel's measurement clock, without which current feedback never updates.
+3. `EnterMissionMode()` sets `OP_MODE`: channels can be switched on only in Mission Mode.
+4. `SetCurrentSetpoint()` writes the 15-bit target for 500 mA; `EnableChannel()` sets `EN_CH0` and the current
+   controller starts regulating.
 
-### Step 6: Configure Channel
+This example is built by the host CI, so it compiles against the current headers.
 
-```cpp
-driver.SetChannelMode(tle92466ed::Channel::CH0, tle92466ed::ChannelMode::ICC);
-driver.SetCurrentSetpoint(tle92466ed::Channel::CH0, 1500); // 1500 mA
-```cpp
+## If it does not work
 
-### Step 7: Enable Channel
+| Symptom | First thing to check |
+| --- | --- |
+| `Init()` returns `DeviceNotResponding` or `HardwareError` | MISO wiring, SPI mode 1, CSN per 32-bit frame, VIO present |
+| `Init()` returns `FaultDetected` | Critical fault frames: VDD (5 V) missing or out of range, clock fault |
+| `Init()` returns `WrongDeviceID` | Another device on the bus, or bits shifted by a wrong SPI mode |
+| `EnableChannel()` returns `WrongMode` | Call `EnterMissionMode()` first |
+| Current reads `FeedbackNotReady` | Dither clock not configured (`ConfigureDither()` or `ConfigureDitherClock()`) |
 
-```cpp
-driver.EnableChannel(tle92466ed::Channel::CH0, true);
-```cpp
+[Troubleshooting](troubleshooting.md) has the full list.
 
-## Complete Example with Error Handling
+## Next
 
-```cpp
-#include "tle92466ed.hpp"
-
-class MySpi : public tle92466ed::SpiInterface<MySpi> {
-    // ... SPI implementation
-};
-
-void app_main() {
-    MySpi spi;
-    tle92466ed::Driver driver(spi);
-    
-    // Initialize
-    if (auto result = driver.Init(); !result) {
-        printf("Initialization failed: %d\n", static_cast<int>(result.error()));
-        return;
-    }
-    
-    // Enter mission mode
-    if (auto result = driver.EnterMissionMode(); !result) {
-        printf("Failed to enter mission mode\n");
-        return;
-    }
-    
-    // Configure channel 0
-    if (auto result = driver.SetChannelMode(tle92466ed::Channel::CH0, 
-                                            tle92466ed::ChannelMode::ICC); !result) {
-        printf("Failed to set channel mode\n");
-        return;
-    }
-    
-    if (auto result = driver.SetCurrentSetpoint(tle92466ed::Channel::CH0, 1500); !result) {
-        printf("Failed to set current\n");
-        return;
-    }
-    
-    // Enable channel
-    driver.EnableChannel(tle92466ed::Channel::CH0, true);
-    
-    // Read diagnostics
-    if (auto diag = driver.GetChannelDiagnostics(tle92466ed::Channel::CH0); diag) {
-        printf("Channel 0 current: %u mA\n", diag->average_current);
-    }
-}
-```cpp
-
-## Expected Output
-
-When running this example, you should see:
-
-```cpp
-Channel 0 current: 1500 mA
-```cpp
-
-## Troubleshooting
-
-If you encounter issues:
-
-- **Compilation errors**: Check that you've implemented all required `SpiInterface` methods (`Transfer32`, `TransferMulti`, `Init`, etc.)
-- **Initialization fails**: Verify SPI connections and hardware setup
-- **Channel not working**: Check channel configuration and enable state
-- **See**: [Troubleshooting](troubleshooting.md) for common issues
-
-## Next Steps
-
-- Explore [Examples](examples.md) for more advanced usage
-- Review the [API Reference](api_reference.md) for all available methods
-- Check [Configuration](configuration.md) for customization options
-
----
-
-**Navigation**
-⬅️ [Installation](installation.md) | [Next: Hardware Setup ➡️](hardware_setup.md) | [Back to Index](index.md)
+- [API guide](api-guide.md): configure channels, read feedback, handle faults.
+- [Current control](current-control.md): setpoint scaling, PWM, dither and the feedback window.
+- [Examples](examples.md): ESP32-S3 applications, from a no-hardware API test to a proportional-valve cycle.
