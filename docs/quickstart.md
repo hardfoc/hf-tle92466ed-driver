@@ -4,21 +4,22 @@ Regulate a solenoid current from your MCU: wire the SPI bus and three control pi
 call five driver functions.
 
 !!! warning "Before you energise a coil"
-    Use a current-limited VBAT supply for the first run and start with a low setpoint. Every inductive load needs
-    its freewheeling path: connect each channel's FWDx pin to the high side of its load (see
-    [Hardware](hardware.md#load-connection)). The example drives 500 mA into CH0.
+    Use a current-limited VBAT supply for the first run and start with a low setpoint. Every inductive load
+    needs a freewheeling diode from FWDx to its supply (see [Hardware](hardware.md#load-connection)).
+    The example drives 500 mA into CH0.
 
 ## 1. Wire it
 
-| MCU | TLE92466ED | Notes |
+| MCU | TLE92466ED (pin) | Notes |
 | --- | --- | --- |
-| SPI SCLK, MOSI, MISO, CS | SCK (6), SI (7), SO (9), CSN (5) | SPI mode 1, up to 8 MHz; start at 1 MHz |
-| GPIO out | RESN (26) | Reset, active low; the driver pulses it in `Init()` |
-| GPIO out | EN (27) | Output enable, active high; the driver sets it in `Init()` |
-| GPIO in | FAULTN (11) | Open drain, active low: pull it up to VIO |
-| 3.3 V or 5 V | VIO (8) | The MCU's I/O voltage; sets the SO level |
-| 5 V | VDD (29) | 4.5 V to 5.5 V supply for the chip |
-| GND | GND, GNDPx | Common ground between the MCU, VDD and VBAT |
+| SPI SCLK, MOSI, MISO | SCK (6), SI (7), SO (9) | Mode 1, 1 MHz to start |
+| SPI CS | CSN (5) | One pulse per 32-bit frame |
+| GPIO out | RESN (26) | Active low reset |
+| GPIO out | EN (27) | Active high enable |
+| GPIO in, pull-up | FAULTN (11) | Open drain, active low |
+| 3.3 V or 5 V | VIO (8) | The MCU's I/O rail |
+| 5 V | VDD (29) | 4.5 V to 5.5 V |
+| GND | GND, GNDPx | Common ground |
 
 VBAT (pin 22) is the load supply, 6 V to 18 V. The [Hardware](hardware.md) page has every pin, the load
 connection and the timing.

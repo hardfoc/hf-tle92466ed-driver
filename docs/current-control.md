@@ -95,7 +95,7 @@ with `I_AVG_MANT` signed (from `FB_I_AVG`) and `TP_MANT` the measurement window 
 
 ## Parallel channels
 
-Channels 0/3, 1/2 and 4/5 can drive one load together (section 4.5.2):
+Channels CH0/CH3, CH1/CH2 and CH4/CH5 can drive one load together (section 4.5.2):
 
 | `ParallelPair` | Master | Slave |
 | --- | --- | --- |

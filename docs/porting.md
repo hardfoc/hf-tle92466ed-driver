@@ -59,7 +59,7 @@ Each returns a `tle92466ed::CommResult<T>`; return `tle::unexpected(CommError::.
 - **No other device between the frames of one call.** The reply to the command frame comes out during the next
   frame; if another device's transaction runs in between, the reply is lost. On a shared bus take the bus lock
   for the whole `TransferMulti()` call (`spi_device_acquire_bus()` on ESP-IDF, a mutex elsewhere).
-- **No byte swapping in the driver.** `Transfer32()` takes and returns the frame as a `uint32_t`; put bit 31 on
+- **Bit 31 first.** `Transfer32()` takes and returns the frame as a `uint32_t`; put bit 31 on
   the wire first. On a little-endian MCU with a byte-buffer SPI API that means swapping the bytes, as the port
   above does.
 - **Return an error only for a bus failure.** CRC, status and reply-width problems are the base class's job.

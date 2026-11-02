@@ -17,8 +17,8 @@ How the driver is put together: three layers, what each owns, and how one call r
 
 | Layer | Where | Depends on | You change it when |
 | --- | --- | --- | --- |
-| **Hardware-agnostic core**: `Driver<Comm>` | [`inc/tle92466ed.hpp`](../inc/tle92466ed.hpp), [`src/tle92466ed.ipp`](../src/tle92466ed.ipp), [`inc/tle92466ed_registers.hpp`](../inc/tle92466ed_registers.hpp) | The interface's methods only | Never, for a new board |
-| **Communication interface**: `SpiInterface<Self>` | [`inc/tle92466ed_spi_interface.hpp`](../inc/tle92466ed_spi_interface.hpp) | Twelve methods of your port | Never |
+| **Hardware-agnostic core**: `Driver<Comm>` | [`tle92466ed.hpp`](../inc/tle92466ed.hpp) | The interface | Never, for a new board |
+| **Communication interface**: `SpiInterface<Self>` | [`tle92466ed_spi_interface.hpp`](../inc/tle92466ed_spi_interface.hpp) | Your port's methods | Never |
 | **Platform port**: your class | Your project | Your SDK | Once per MCU or board ([Porting](porting.md)) |
 
 Everything above the port is the same on ESP32, STM32, a Linux host or the unit-test model. That is how the

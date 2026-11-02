@@ -47,13 +47,15 @@ replies; every other register with 16-bit replies.
 
 ## Status field
 
+The status in a 16-bit reply describes the **previous** request frame:
+
 | `STATUS` | `SPIStatus` | Meaning |
 | --- | --- | --- |
-| `00000` | `NO_ERROR` | The previous frame was accepted |
-| `00001` | `SPI_FRAME_ERROR` | The previous frame was malformed |
-| `00010` | `CRC_ERROR` | The previous frame's CRC did not match |
-| `00011` | `WRITE_RO_REG` | The previous frame wrote a read-only register |
-| `00100` to `00110` | `INTERNAL_BUS_FAULT` | Internal bus fault |
+| `00000` | `NO_ERROR` | Accepted |
+| `00001` | `SPI_FRAME_ERROR` | Malformed |
+| `00010` | `CRC_ERROR` | CRC mismatch |
+| `00011` | `WRITE_RO_REG` | Wrote a read-only register |
+| `00100`-`00110` | `INTERNAL_BUS_FAULT` | Internal bus fault |
 
 The lowest code has the highest priority. `Write()` turns any non-zero status into `CommError::TransferError`
 (`DriverError::SPIFrameError`).
