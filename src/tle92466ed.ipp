@@ -310,9 +310,12 @@ DriverResult<void> Driver<CommType>::applyDefaultConfig() noexcept {
   }
   crc_enabled_ = false;
 
-  // Set default VBAT thresholds (UV=7V, OV=40V)
+  // Default VBAT thresholds (UV=7V, OV=40V), taken from GlobalConfig{} so the
+  // structure's defaults and what Init() writes cannot drift apart.
   // Use internal version that doesn't check initialization (called during Init)
-  if (auto result = setVbatThresholdsInternal(7.0f, 40.0f); !result) {
+  constexpr GlobalConfig kDefaults{};
+  if (auto result = setVbatThresholdsInternal(kDefaults.vbat_uv_voltage, kDefaults.vbat_ov_voltage);
+      !result) {
     return tle::unexpected(result.error());
   }
 

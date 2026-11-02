@@ -116,3 +116,20 @@ TEST_CASE("a critical fault reply surfaces as FaultDetected") {
   REQUIRE(!w.has_value());
   CHECK(w.error() == DriverError::FaultDetected);
 }
+
+// GlobalConfig{} describes the state Init() leaves (datasheet 5.3 GLOBAL_CONFIG / VBAT_TH): applying
+// the defaults must not switch on the SPI watchdog (it would drop the chip to Config Mode once WD_TIME
+// runs out, datasheet 5.2.2) or change CRC_EN and the VBAT thresholds behind the caller's back.
+TEST_CASE("ConfigureGlobal(GlobalConfig{}) keeps the configuration Init() wrote") {
+  MockTle92466ed chip;
+  Driver drv(chip);
+  REQUIRE(drv.Init().has_value());
+  const uint32_t global_after_init = chip.regs()[CentralReg::GLOBAL_CONFIG];
+  const uint32_t vbat_after_init = chip.regs()[CentralReg::VBAT_TH];
+
+  REQUIRE(drv.ConfigureGlobal(tle92466ed::GlobalConfig{}).has_value());
+  CHECK_EQ(chip.regs()[CentralReg::GLOBAL_CONFIG], global_after_init);
+  CHECK_EQ(chip.regs()[CentralReg::VBAT_TH], vbat_after_init);
+  CHECK_EQ(chip.regs()[CentralReg::GLOBAL_CONFIG] & tle92466ed::GLOBAL_CONFIG::SPI_WD_EN, 0U);
+  CHECK_EQ(chip.regs()[CentralReg::GLOBAL_CONFIG] & tle92466ed::GLOBAL_CONFIG::CRC_EN, 0U);
+}
