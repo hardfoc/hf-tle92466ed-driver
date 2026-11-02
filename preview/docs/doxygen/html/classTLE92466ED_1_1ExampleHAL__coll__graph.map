@@ -1,7 +1,0 @@
-<map id="TLE92466ED::ExampleHAL" name="TLE92466ED::ExampleHAL">
-<area shape="rect" id="Node000001" title="Example HAL implementation for 32&#45;bit SPI." alt="" coords="80,104,327,135"/>
-<area shape="rect" id="Node000002" href="$classTLE92466ED_1_1HAL.html" title="Abstract Hardware Abstraction Layer (HAL) base class." alt="" coords="5,5,180,36"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="121,43,189,102,185,106,117,47"/>
-<area shape="rect" id="Node000003" href="$structTLE92466ED_1_1SPIConfig.html" title="SPI transaction configuration." alt="" coords="205,5,426,36"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="290,47,222,106,218,102,287,43"/>
-</map>

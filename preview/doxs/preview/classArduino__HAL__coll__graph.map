@@ -1,7 +1,0 @@
-<map id="Arduino_HAL" name="Arduino_HAL">
-<area shape="rect" id="Node000001" title="Arduino implementation of TLE92466ED HAL interface." alt="" coords="139,104,268,135"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,180,36"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="121,43,189,102,185,106,117,47"/>
-<area shape="rect" id="Node000003" href="$structArduino__HAL_1_1SPIConfig.html" title="SPI configuration for Arduino." alt="" coords="204,5,424,36"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="289,47,221,106,218,102,286,43"/>
-</map>

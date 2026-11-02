@@ -1,7 +1,0 @@
-<map id="TLE92466ED::HAL" name="TLE92466ED::HAL">
-<area shape="rect" id="Node000001" title="Abstract Hardware Abstraction Layer (HAL) base class." alt="" coords="102,5,277,36"/>
-<area shape="rect" id="Node000002" href="$classESP32C6__HAL.html" title="ESP32&#45;C6 implementation of the TLE92466ED HAL interface." alt="" coords="5,84,152,115"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="159,46,101,86,98,82,156,42"/>
-<area shape="rect" id="Node000003" href="$classTLE92466ED_1_1ExampleHAL.html" title="Example HAL implementation for 32&#45;bit SPI." alt="" coords="177,84,423,115"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="223,42,281,82,278,86,220,46"/>
-</map>

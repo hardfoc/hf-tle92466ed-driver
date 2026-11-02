@@ -1,7 +1,0 @@
-<map id="ESP32C6_HAL" name="ESP32C6_HAL">
-<area shape="rect" id="Node000001" title="ESP32&#45;C6 implementation of the TLE92466ED HAL interface." alt="" coords="134,104,281,135"/>
-<area shape="rect" id="Node000002" href="$classTLE92466ED_1_1HAL.html" title="Abstract Hardware Abstraction Layer (HAL) base class." alt="" coords="5,5,180,36"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="122,43,192,102,189,106,118,47"/>
-<area shape="rect" id="Node000003" href="$structESP32C6__HAL_1_1SPIConfig.html" title="SPI configuration structure for ESP32&#45;C6." alt="" coords="205,5,442,36"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="297,47,226,106,223,102,294,43"/>
-</map>

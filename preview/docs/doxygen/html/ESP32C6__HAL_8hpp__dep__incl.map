@@ -1,9 +1,0 @@
-<map id="examples/esp32/main/ESP32C6_HAL.hpp" name="examples/esp32/main/ESP32C6_HAL.hpp">
-<area shape="rect" id="Node000001" title="ESP32&#45;C6 Hardware Abstraction Layer for TLE92466ED driver." alt="" coords="257,5,456,56"/>
-<area shape="rect" id="Node000002" href="$BasicUsageExample_8cpp.html" title="Basic usage example for TLE92466ED driver on ESP32&#45;C6." alt="" coords="5,104,233,155"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="285,64,180,106,178,101,283,59"/>
-<area shape="rect" id="Node000003" href="$ESP32C6__HAL_8cpp.html" title="ESP32&#45;C6 Hardware Abstraction Layer implementation for TLE92466ED driver." alt="" coords="257,104,456,155"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="359,70,359,103,354,103,354,70"/>
-<area shape="rect" id="Node000004" href="$MultiChannelExample_8cpp.html" title="Multi&#45;channel control example for TLE92466ED driver on ESP32&#45;C6." alt="" coords="480,104,719,155"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="431,59,540,101,538,106,429,64"/>
-</map>

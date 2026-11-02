@@ -1,5 +1,0 @@
-<map id="examples/esp32/main/TLE92466ED_TestConfig.hpp" name="examples/esp32/main/TLE92466ED_TestConfig.hpp">
-<area shape="rect" id="Node000001" title="Hardware configuration for TLE92466ED driver on ESP32&#45;C6." alt="" coords="5,5,271,56"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="101,104,175,135"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="141,56,141,90,135,90,135,56"/>
-</map>

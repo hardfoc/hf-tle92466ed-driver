@@ -1,9 +1,0 @@
-<map id="examples/arduino/Arduino_HAL.hpp" name="examples/arduino/Arduino_HAL.hpp">
-<area shape="rect" id="Node000001" title="Arduino Hardware Abstraction Layer for TLE92466ED Driver." alt="" coords="45,5,277,56"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="5,104,104,135"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="133,58,85,97,81,93,129,54"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="128,104,195,135"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="164,56,164,90,159,90,159,56"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="219,104,519,135"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="221,54,324,96,322,101,219,59"/>
-</map>

@@ -1,5 +1,0 @@
-<map id="examples/esp32/main/TLE92466ED_TestFramework.hpp" name="examples/esp32/main/TLE92466ED_TestFramework.hpp">
-<area shape="rect" id="Node000001" title="Testing framework for TLE92466ED driver examples on ESP32&#45;C6." alt="" coords="5,5,309,56"/>
-<area shape="rect" id="Node000002" href="$DriverIntegrationTest_8cpp.html" title="Comprehensive Integration Test Suite for TLE92466ED Driver." alt="" coords="44,104,271,155"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="160,70,160,103,155,103,155,70"/>
-</map>
