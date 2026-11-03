@@ -18,3 +18,7 @@ CONFIG_LOG_DEFAULT_LEVEL_INFO=y
 # Newlib I/O for sane printf semantics.
 CONFIG_NEWLIB_STDOUT_LINE_ENDING_CRLF=y
 CONFIG_NEWLIB_STDIN_LINE_ENDING_CR=y
+
+# HardFOC standard: FreeRTOS runs at 1000 Hz. hf-utils-rtos-wrap rounds a
+# nonzero delay up to one tick, so ms-precision waits need a 1 ms tick.
+CONFIG_FREERTOS_HZ=1000
