@@ -105,6 +105,47 @@
   <meta property="og:description" content="Hardware-agnostic C++20 driver for the Infineon TLE92466ED six-channel low-side solenoid driver (SPI).">
   <meta property="og:url" content="https://hardfoc.github.io/hf-tle92466ed-driver/latest/hardware/">
   <meta name="twitter:card" content="summary">
+  <script>
+(function () {
+  if (typeof mermaid != "undefined" && !(mermaid instanceof Element)) return;
+  var SRC = "https://unpkg.com/mermaid@11/dist/mermaid.min.js", config = {}, real, loading, waiting = [];
+  var stub = {
+    initialize: function (c) { config = c || {}; if (real) real.initialize(config); },
+    render: function (id, text) {
+      var el = null, pres = document.querySelectorAll("pre.mermaid:not([data-hf-mermaid])");
+      for (var i = 0; i < pres.length && !el; i++) if (pres[i].textContent === text) el = pres[i];
+      if (el) el.setAttribute("data-hf-mermaid", "");
+      return near(el).then(load).then(function (m) { return m.render(id, text); });
+    }
+  };
+  function load() {
+    return loading || (loading = new Promise(function (resolve, reject) {
+      var s = document.createElement("script");
+      s.src = SRC;
+      s.onload = function () {
+        real = window.mermaid;
+        window.mermaid = stub;
+        real.initialize(config);
+        resolve(real);
+      };
+      s.onerror = function () { loading = null; reject(new Error("Mermaid did not load")); };
+      document.head.appendChild(s);
+    }));
+  }
+  function near(el) {
+    if (real || !el || !("IntersectionObserver" in window)) return Promise.resolve();
+    return new Promise(function (resolve) {
+      var io = new IntersectionObserver(function (entries) {
+        if (entries.some(function (e) { return e.isIntersecting; })) { io.disconnect(); resolve(); }
+      }, { rootMargin: "100% 0px" });
+      io.observe(el);
+      waiting.push(function () { io.disconnect(); resolve(); });
+    });
+  }
+  window.addEventListener("beforeprint", function () { waiting.splice(0).forEach(function (go) { go(); }); });
+  window.mermaid = stub;
+})();
+</script>
 
   </head>
   
@@ -1120,7 +1161,7 @@
 <h1 id="hardware">Hardware<a class="headerlink" href="#hardware" title="Permanent link">&para;</a></h1>
 <p>What to connect between your MCU and a TLE92466ED, with which bus settings and supplies, and the board-level
 details that decide whether the first frame works.</p>
-<p>All values here come from the <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/docs/datasheet/tle92466ed-datasheet.pdf">TLE92466ED datasheet</a> (Rev. 1.2, 2022-02-01).
+<p>All values here come from the <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/docs/datasheet/tle92466ed-datasheet.pdf">TLE92466ED datasheet</a> (Rev. 1.2, 2022-02-01).
 When they disagree with a board's schematic, the schematic wins for pin routing and active levels.</p>
 <h2 id="host-interface-pins">Host interface pins<a class="headerlink" href="#host-interface-pins" title="Permanent link">&para;</a></h2>
 <table>
@@ -1496,10 +1537,10 @@ to the pins.</p>
 <p>Infineon's Next Generation Solenoid Driver evaluation kit has a TLE92466ED evaluation PCB in Arduino form factor
 (Version S), or the same PCB with a connection PCB for laboratory setups (Version L). The PCB takes 5 V from the
 MCU board, clocks the chip from an on-board 2 MHz oscillator and brings out SPI, EN, RESN, FAULTN and DRVx on the
-Arduino headers. The <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/docs/datasheet/tle92466ed-eval-kit-user-manual.pdf">user manual</a> has the connector pinouts and
+Arduino headers. The <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/docs/datasheet/tle92466ed-eval-kit-user-manual.pdf">user manual</a> has the connector pinouts and
 jumpers.</p>
 <p>The <a href="../examples/">ESP32 examples</a> run on an ESP32-S3 wired like this (from
-<a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/examples/esp32/main/esp32_tle92466ed_test_config.hpp"><code>esp32_tle92466ed_test_config.hpp</code></a>):</p>
+<a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/examples/esp32/main/esp32_tle92466ed_test_config.hpp"><code>esp32_tle92466ed_test_config.hpp</code></a>):</p>
 <table>
 <thead>
 <tr>
@@ -1552,11 +1593,11 @@ jumpers.</p>
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/docs/datasheet/tle92466ed-datasheet.pdf">TLE92466ED datasheet</a></td>
+<td><a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/docs/datasheet/tle92466ed-datasheet.pdf">TLE92466ED datasheet</a></td>
 <td>Pins, electrical limits, SPI protocol, every register</td>
 </tr>
 <tr>
-<td><a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/docs/datasheet/tle92466ed-eval-kit-user-manual.pdf">Evaluation kit user manual</a></td>
+<td><a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/docs/datasheet/tle92466ed-eval-kit-user-manual.pdf">Evaluation kit user manual</a></td>
 <td>Evaluation PCB connectors, jumpers, schematics</td>
 </tr>
 </tbody>

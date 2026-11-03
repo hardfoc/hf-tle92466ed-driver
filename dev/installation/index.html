@@ -105,6 +105,47 @@
   <meta property="og:description" content="Hardware-agnostic C++20 driver for the Infineon TLE92466ED six-channel low-side solenoid driver (SPI).">
   <meta property="og:url" content="https://hardfoc.github.io/hf-tle92466ed-driver/latest/installation/">
   <meta name="twitter:card" content="summary">
+  <script>
+(function () {
+  if (typeof mermaid != "undefined" && !(mermaid instanceof Element)) return;
+  var SRC = "https://unpkg.com/mermaid@11/dist/mermaid.min.js", config = {}, real, loading, waiting = [];
+  var stub = {
+    initialize: function (c) { config = c || {}; if (real) real.initialize(config); },
+    render: function (id, text) {
+      var el = null, pres = document.querySelectorAll("pre.mermaid:not([data-hf-mermaid])");
+      for (var i = 0; i < pres.length && !el; i++) if (pres[i].textContent === text) el = pres[i];
+      if (el) el.setAttribute("data-hf-mermaid", "");
+      return near(el).then(load).then(function (m) { return m.render(id, text); });
+    }
+  };
+  function load() {
+    return loading || (loading = new Promise(function (resolve, reject) {
+      var s = document.createElement("script");
+      s.src = SRC;
+      s.onload = function () {
+        real = window.mermaid;
+        window.mermaid = stub;
+        real.initialize(config);
+        resolve(real);
+      };
+      s.onerror = function () { loading = null; reject(new Error("Mermaid did not load")); };
+      document.head.appendChild(s);
+    }));
+  }
+  function near(el) {
+    if (real || !el || !("IntersectionObserver" in window)) return Promise.resolve();
+    return new Promise(function (resolve) {
+      var io = new IntersectionObserver(function (entries) {
+        if (entries.some(function (e) { return e.isIntersecting; })) { io.disconnect(); resolve(); }
+      }, { rootMargin: "100% 0px" });
+      io.observe(el);
+      waiting.push(function () { io.disconnect(); resolve(); });
+    });
+  }
+  window.addEventListener("beforeprint", function () { waiting.splice(0).forEach(function (go) { go(); }); });
+  window.mermaid = stub;
+})();
+</script>
 
   </head>
   
@@ -1068,7 +1109,7 @@
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <ul>
 <li>A C++20 compiler: GCC 10+, Clang 12+ or a current MSVC. On C++23 the driver uses <code>std::expected</code>; on C++20 it
-  uses the polyfill in <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/inc/tle92466ed_expected.hpp"><code>inc/tle92466ed_expected.hpp</code></a>.</li>
+  uses the polyfill in <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/inc/tle92466ed_expected.hpp"><code>inc/tle92466ed_expected.hpp</code></a>.</li>
 <li>A little-endian target: the frame CRC is computed over the frame's bytes in memory, and a <code>static_assert</code>
   stops the build on a big-endian one.</li>
 <li>No RTOS, heap or exceptions: every call is <code>noexcept</code> and returns a <code>tle92466ed::DriverResult&lt;T&gt;</code>.</li>
@@ -1116,7 +1157,7 @@ includes) under <code>include/hf_tle92466ed/</code>, and a package config under 
 <p>The host test <code>hf_tle92466ed_install</code> installs into a scratch prefix and builds a consumer against it.</p>
 <h2 id="esp-idf">ESP-IDF<a class="headerlink" href="#esp-idf" title="Permanent link">&para;</a></h2>
 <p>The ESP-IDF component wrapper is
-<a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/examples/esp32/components/hf_tle92466ed/CMakeLists.txt"><code>examples/esp32/components/hf_tle92466ed/</code></a>. Copy that
+<a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/examples/esp32/components/hf_tle92466ed/CMakeLists.txt"><code>examples/esp32/components/hf_tle92466ed/</code></a>. Copy that
 folder into your project's <code>components/</code> (or point <code>EXTRA_COMPONENT_DIRS</code> at it) and set the
 <code>HF_TLE92466ED_ROOT</code> cache variable to the driver checkout; the wrapper stops with a clear message when the path is
 wrong. Your component then declares <code>REQUIRES hf_tle92466ed</code>.</p>
@@ -1132,22 +1173,22 @@ wrong. Your component then declares <code>REQUIRES hf_tle92466ed</code>.</p>
 <tbody>
 <tr>
 <td>Settings</td>
-<td><a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/cmake/hf_tle92466ed_build_settings.cmake"><code>cmake/hf_tle92466ed_build_settings.cmake</code></a></td>
+<td><a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/cmake/hf_tle92466ed_build_settings.cmake"><code>cmake/hf_tle92466ed_build_settings.cmake</code></a></td>
 <td>Include directories, version: the single source of truth</td>
 </tr>
 <tr>
 <td>Library</td>
-<td><a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/CMakeLists.txt"><code>CMakeLists.txt</code></a></td>
+<td><a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/CMakeLists.txt"><code>CMakeLists.txt</code></a></td>
 <td>Interface library, install and package export</td>
 </tr>
 <tr>
 <td>ESP-IDF</td>
-<td><a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/examples/esp32/components/hf_tle92466ed/CMakeLists.txt"><code>examples/esp32/components/hf_tle92466ed/CMakeLists.txt</code></a></td>
+<td><a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/examples/esp32/components/hf_tle92466ed/CMakeLists.txt"><code>examples/esp32/components/hf_tle92466ed/CMakeLists.txt</code></a></td>
 <td>IDF component wrapper over the same settings</td>
 </tr>
 </tbody>
 </table>
-<p>The implementation lives in <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/src/tle92466ed.ipp"><code>src/tle92466ed.ipp</code></a>, which <code>tle92466ed.hpp</code> includes; do
+<p>The implementation lives in <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/src/tle92466ed.ipp"><code>src/tle92466ed.ipp</code></a>, which <code>tle92466ed.hpp</code> includes; do
 not compile it on its own. The version is set once in the settings file and written into <code>tle92466ed_version.h</code>
 at configure time. Read it at run time:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tle92466ed</span><span class="o">::</span><span class="n">Driver</span><span class="o">&lt;</span><span class="n">MySpi</span><span class="o">&gt;::</span><span class="n">GetDriverVersion</span><span class="p">();</span><span class="w">   </span><span class="c1">// "1.0.0"</span>

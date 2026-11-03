@@ -105,6 +105,47 @@
   <meta property="og:description" content="Hardware-agnostic C++20 driver for the Infineon TLE92466ED six-channel low-side solenoid driver (SPI).">
   <meta property="og:url" content="https://hardfoc.github.io/hf-tle92466ed-driver/latest/architecture/">
   <meta name="twitter:card" content="summary">
+  <script>
+(function () {
+  if (typeof mermaid != "undefined" && !(mermaid instanceof Element)) return;
+  var SRC = "https://unpkg.com/mermaid@11/dist/mermaid.min.js", config = {}, real, loading, waiting = [];
+  var stub = {
+    initialize: function (c) { config = c || {}; if (real) real.initialize(config); },
+    render: function (id, text) {
+      var el = null, pres = document.querySelectorAll("pre.mermaid:not([data-hf-mermaid])");
+      for (var i = 0; i < pres.length && !el; i++) if (pres[i].textContent === text) el = pres[i];
+      if (el) el.setAttribute("data-hf-mermaid", "");
+      return near(el).then(load).then(function (m) { return m.render(id, text); });
+    }
+  };
+  function load() {
+    return loading || (loading = new Promise(function (resolve, reject) {
+      var s = document.createElement("script");
+      s.src = SRC;
+      s.onload = function () {
+        real = window.mermaid;
+        window.mermaid = stub;
+        real.initialize(config);
+        resolve(real);
+      };
+      s.onerror = function () { loading = null; reject(new Error("Mermaid did not load")); };
+      document.head.appendChild(s);
+    }));
+  }
+  function near(el) {
+    if (real || !el || !("IntersectionObserver" in window)) return Promise.resolve();
+    return new Promise(function (resolve) {
+      var io = new IntersectionObserver(function (entries) {
+        if (entries.some(function (e) { return e.isIntersecting; })) { io.disconnect(); resolve(); }
+      }, { rootMargin: "100% 0px" });
+      io.observe(el);
+      waiting.push(function () { io.disconnect(); resolve(); });
+    });
+  }
+  window.addEventListener("beforeprint", function () { waiting.splice(0).forEach(function (go) { go(); }); });
+  window.mermaid = stub;
+})();
+</script>
 
   </head>
   
@@ -1060,14 +1101,14 @@
 <h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h1>
 <p>How the driver is put together: three layers, what each owns, and how one call reaches the chip.</p>
 <figure class="hf-figure">
-<img src="../diagrams/driver-layers.svg#only-light" alt="Layer diagram: the application calls the hardware-agnostic TLE92466ED driver, which owns the central and per-channel register map, and uses the CRTP SPI interface that frames, checks and pipelines 32-bit transfers, which calls the platform port you write, which drives the SPI bus and the RESN, EN and FAULTN pins of the TLE92466ED." width="1200" loading="lazy"><img src="../diagrams/driver-layers.dark.svg#only-dark" alt="Layer diagram: the application calls the hardware-agnostic TLE92466ED driver, which owns the central and per-channel register map, and uses the CRTP SPI interface that frames, checks and pipelines 32-bit transfers, which calls the platform port you write, which drives the SPI bus and the RESN, EN and FAULTN pins of the TLE92466ED." width="1200" loading="lazy">
+<img src="../diagrams/driver-layers.svg#only-light" alt="Layer diagram: the application calls the hardware-agnostic TLE92466ED driver, which owns the central and per-channel register map, and uses the CRTP SPI interface that frames, checks and pipelines 32-bit transfers, which calls the platform port you write, which drives the SPI bus and the RESN, EN and FAULTN pins of the TLE92466ED." width="1200" height="1154"><img src="../diagrams/driver-layers.dark.svg#only-dark" alt="Layer diagram: the application calls the hardware-agnostic TLE92466ED driver, which owns the central and per-channel register map, and uses the CRTP SPI interface that frames, checks and pipelines 32-bit transfers, which calls the platform port you write, which drives the SPI bus and the RESN, EN and FAULTN pins of the TLE92466ED." width="1200" height="1154">
 <figcaption>Three layers, one of them yours</figcaption>
 </figure>
 
 <details class="hf-figure-desc">
 <summary>Figure description and sources</summary>
 <p>From top to bottom. Your application talks to one Driver<Comm> object per chip. The core owns the chip's register map (from inc/tle92466ed_registers.hpp): the central configuration and status registers, and the bank of channel registers that repeats for each of the six channels. The communication interface (tle92466ed::SpiInterface in inc/tle92466ed_spi_interface.hpp) is a CRTP base: it builds 32-bit frames with the CRC-8 SAE J1850 byte, runs the one-frame reply pipeline and validates every reply; the methods it dispatches to your class are listed from the header. The platform port is the only code you write. Below it is the chip.</p>
-<p>Drawn from: <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/inc/tle92466ed_registers.hpp"><code>inc/tle92466ed_registers.hpp</code></a> <code>CentralReg</code>; <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/inc/tle92466ed_registers.hpp"><code>inc/tle92466ed_registers.hpp</code></a> <code>ChannelReg</code>; <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/inc/tle92466ed_spi_interface.hpp"><code>inc/tle92466ed_spi_interface.hpp</code></a> <code>SpiInterface</code>; figure module <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/docs/diagrams/figures/driver-layers.py"><code>docs/diagrams/figures/driver-layers.py</code></a>.</p>
+<p>Drawn from: <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/inc/tle92466ed_registers.hpp"><code>inc/tle92466ed_registers.hpp</code></a> <code>CentralReg</code>; <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/inc/tle92466ed_registers.hpp"><code>inc/tle92466ed_registers.hpp</code></a> <code>ChannelReg</code>; <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/inc/tle92466ed_spi_interface.hpp"><code>inc/tle92466ed_spi_interface.hpp</code></a> <code>SpiInterface</code>; figure module <a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/docs/diagrams/figures/driver-layers.py"><code>docs/diagrams/figures/driver-layers.py</code></a>.</p>
 </details>
 <h2 id="the-three-layers">The three layers<a class="headerlink" href="#the-three-layers" title="Permanent link">&para;</a></h2>
 <table>
@@ -1082,13 +1123,13 @@
 <tbody>
 <tr>
 <td><strong>Hardware-agnostic core</strong>: <code>Driver&lt;Comm&gt;</code></td>
-<td><a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/inc/tle92466ed.hpp"><code>tle92466ed.hpp</code></a></td>
+<td><a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/inc/tle92466ed.hpp"><code>tle92466ed.hpp</code></a></td>
 <td>The interface</td>
 <td>Never, for a new board</td>
 </tr>
 <tr>
 <td><strong>Communication interface</strong>: <code>SpiInterface&lt;Self&gt;</code></td>
-<td><a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/ab40b600826a07c787383930bd3fb9ea003203fd/inc/tle92466ed_spi_interface.hpp"><code>tle92466ed_spi_interface.hpp</code></a></td>
+<td><a href="https://github.com/hardfoc/hf-tle92466ed-driver/blob/32db366ec9771a3aa416daf478d1e26278079c6c/inc/tle92466ed_spi_interface.hpp"><code>tle92466ed_spi_interface.hpp</code></a></td>
 <td>Your port's methods</td>
 <td>Never</td>
 </tr>
